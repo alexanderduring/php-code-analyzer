@@ -2,7 +2,7 @@
 
 namespace Application\Model\CodeAnalyzer\NodeVisitor;
 
-use Application\Model\CodeAnalyzer\Index;
+use Application\Model\CodeAnalyzer\DefinitionIndex;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
 
@@ -12,15 +12,15 @@ use PhpParser\Node;
  */
 class ClassDefinitionIndexer extends NodeVisitorAbstract
 {
-    /** @var Application\Model\CodeAnalyzer\Index */
+    /** @var Application\Model\CodeAnalyzer\DefinitionIndex */
     private $index;
 
 
 
     /**
-     * @param Application\Model\CodeAnalyzer\Index $index
+     * @param Application\Model\CodeAnalyzer\DefinitionIndex $index
      */
-    public function injectIndex(Index $index)
+    public function injectIndex(DefinitionIndex $index)
     {
         $this->index = $index;
     }

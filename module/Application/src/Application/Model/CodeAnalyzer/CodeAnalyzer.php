@@ -3,6 +3,7 @@
 namespace Application\Model\CodeAnalyzer;
 
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
+use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
 use PhpParser\Error as PhpParserError;
 use PhpParser\Lexer;
 use PhpParser\Node;
@@ -22,15 +23,17 @@ use PhpParser\Parser;
  */
 class CodeAnalyzer
 {
-    /** @var Application\Model\CodeAnalyzer\Index */
-    private $index;
+    /** @var Application\Model\CodeAnalyzer\DefinitionIndex */
+    private $definitionIndex;
 
-    private $classes = array();
-    private $assignments = array();
-    private $newExpressions = array();
-
+    /** @var Application\Model\CodeAnalyzer\UsageIndex */
+    private $usageIndex;
 
 
+
+    /**
+     * @param string $code
+     */
     public function analyze($code)
     {
         // Should be injected via factory
@@ -42,24 +45,25 @@ class CodeAnalyzer
         $traverser->addVisitor($nameResolver);
 
         // Add our class definition indexer
-        $this->index = new Index();
+        $this->definitionIndex = new DefinitionIndex();
         $classDefinitionIndexer = new ClassDefinitionIndexer();
-        $classDefinitionIndexer->injectIndex($this->index);
+        $classDefinitionIndexer->injectIndex($this->definitionIndex);
         $traverser->addVisitor($classDefinitionIndexer);
+
+        // Add our class usage indexer
+        $this->usageIndex = new UsageIndex();
+        $classUsageIndexer = new ClassUsageIndexer();
+        $classUsageIndexer->injectIndex($this->usageIndex);
+        $traverser->addVisitor($classUsageIndexer);
 
         try {
             $nodes = $parser->parse($code);
 //            var_dump($nodes);
-            $traversedNodes = $traverser->traverse($nodes);
+            $traverser->traverse($nodes);
 //            var_dump($traversedNodes);
         }
         catch (PhpParserError $exception) {
             echo 'Parse Error: ', $exception->getMessage();
-        }
-
-        // Will be moved into visitor
-        foreach ($traversedNodes as $node) {
-            $this->checkNode($node);
         }
 
         $this->report();
@@ -67,42 +71,14 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @param Node $node
-     */
-    private function checkNode(Node $node)
-    {
-        if ($node->getType() == 'Expr_Assign') {
-            $this->assignments[] = $node;
-            $this->checkNode($node->expr);
-        }
-
-        if ($node->getType() == 'Expr_New') {
-            $this->newExpressions[] = $node;
-        }
-    }
-
-
-
     private function report()
     {
         echo "\nFound classes:\n--------------\n";
-        echo $this->index . "\n";
+        echo $this->definitionIndex . "\n";
 
         echo "\n";
         echo "Found instantiations:\n";
         echo "---------------------\n";
-
-        foreach ($this->newExpressions as $new) {
-
-            $classNameNode = $new->class;
-            $className = implode('\\', $classNameNode->parts);
-
-            $classIsKnown = $this->index->hasClass($className);
-            $classIsKnownText = $classIsKnown ? '' : ' (unbekannt)';
-
-            $lineNumber = $new->getLine();
-            echo "Class " . $className . $classIsKnownText .  ", Line " . $lineNumber . "\n";
-        }
+        echo $this->usageIndex . "\n";
     }
 }

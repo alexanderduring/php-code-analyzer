@@ -9,7 +9,7 @@ namespace Application\Model\CodeAnalyzer;
  * - interfaces
  * found in the code.
  */
-class Index
+class DefinitionIndex
 {
     /** @var array */
     private $index = array();
