@@ -72,14 +72,6 @@ class CodeAnalyzer
      */
     private function checkNode(Node $node)
     {
-        if ($node->getType() == 'Stmt_Class') {
-            $className = $node->name;
-            $class = array(
-                'name' => $className,
-            );
-            $this->classes[$className] = $class;
-        }
-
         if ($node->getType() == 'Expr_Assign') {
             $this->assignments[] = $node;
             $this->checkNode($node->expr);
@@ -94,35 +86,23 @@ class CodeAnalyzer
 
     private function report()
     {
+        echo "\nFound classes:\n--------------\n";
         echo $this->index . "\n";
 
-        echo "Classes\n";
-        echo "-------\n";
-
-        foreach ($this->classes as $class) {
-
-            echo $class['name'] . "\n";
-        }
-
         echo "\n";
-        echo "Instantiations\n";
-        echo "--------------\n";
+        echo "Found instantiations:\n";
+        echo "---------------------\n";
 
         foreach ($this->newExpressions as $new) {
 
             $classNameNode = $new->class;
             $className = implode('\\', $classNameNode->parts);
 
-            if (array_key_exists($className, $this->classes)) {
-                $classIsKnown = true;
-            } else {
-                $classIsKnown = false;
-            }
-
+            $classIsKnown = $this->index->hasClass($className);
             $classIsKnownText = $classIsKnown ? '' : ' (unbekannt)';
 
             $lineNumber = $new->getLine();
-            echo "Class " . $className . $classIsKnownText .  ", Zeile " . $lineNumber . "\n";
+            echo "Class " . $className . $classIsKnownText .  ", Line " . $lineNumber . "\n";
         }
     }
 }

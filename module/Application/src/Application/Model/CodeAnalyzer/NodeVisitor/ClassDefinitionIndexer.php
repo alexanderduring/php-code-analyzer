@@ -76,6 +76,6 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     {
         $className = $classStatement->name;
         $fullyQualifiedClassName = implode('\\', $classStatement->namespacedName->parts);
-        $this->index->addClass($fullyQualifiedClassName);
+        $this->index->addClass($fullyQualifiedClassName, 'class');
     }
 }
