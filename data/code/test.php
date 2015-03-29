@@ -1,6 +1,13 @@
 <?php
 
-class Foo
+interface Barable
+{
+    public function bar();
+}
+
+
+
+class Foo implements Barable
 {
     /**
      * @return boolean

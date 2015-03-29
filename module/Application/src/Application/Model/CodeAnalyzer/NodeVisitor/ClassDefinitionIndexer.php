@@ -45,6 +45,10 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
             $this->addClassToIndex($node);
         }
 
+        if ($node->getType() == 'Stmt_Interface') {
+            $this->addInterfaceToIndex($node);
+        }
+
     }
 
 
@@ -69,13 +73,34 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
 
 
     /**
-     * Adds the fully qualified class name to the index.
+     * Adds a class to the index.
      * @param Node $classStatement
      */
     private function addClassToIndex(Node $classStatement)
     {
-        $className = $classStatement->name;
-        $fullyQualifiedClassName = implode('\\', $classStatement->namespacedName->parts);
-        $this->index->addClass($fullyQualifiedClassName, 'class');
+        $this->addEntryToIndex($classStatement, 'class');
+    }
+
+
+
+    /**
+     * Adds an interface to the index.
+     * @param Node $interfaceStatement
+     */
+    private function addInterfaceToIndex(Node $interfaceStatement)
+    {
+        $this->addEntryToIndex($interfaceStatement, 'interface');
+    }
+
+
+
+    /**
+     * Adds a class, abstract class or interface to the index.
+     * @param Node $node
+     */
+    private function addEntryToIndex(Node $node, $type)
+    {
+        $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
+        $this->index->addClass($fullyQualifiedClassName, $type);
     }
 }
