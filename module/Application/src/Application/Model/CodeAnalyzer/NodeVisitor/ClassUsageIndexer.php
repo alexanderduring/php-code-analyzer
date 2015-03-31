@@ -41,8 +41,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
      */
     public function enterNode(Node $node)
     {
+        // Found "new" node
         if ($node->getType() == 'Expr_New') {
-            $this->addInstantiation($node);
+            $this->analyzeInstantiation($node);
         }
     }
 
@@ -70,11 +71,21 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     /**
      * @param Node $newNode
      */
-    private function addInstantiation(Node $newNode)
+    private function analyzeInstantiation(Node $newNode)
     {
-        $name = implode('\\', $newNode->class->parts);
         $file = 'not-implemented-yet.php';
         $line = $newNode->getLine();
-        $this->index->addInstantiation($name, $file, $line);
+
+        // "new" statement with fully qualified class name
+        if ($newNode->class->getType() == 'Name_FullyQualified') {
+            $name = implode('\\', $newNode->class->parts);
+            $this->index->addInstantiation($name, $file, $line);
+        }
+
+        // "new" statement with variable
+        if ($newNode->class->getType() == 'Expr_Variable') {
+            $variableName = $newNode->class->name;
+            $this->index->addInstantiationWithVariable($variableName, $file, $line);
+        }
     }
 }

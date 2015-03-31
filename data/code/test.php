@@ -53,3 +53,7 @@ $list = array(
 
 // Instantiation in a function call
 $var3 = new Thing(new AnotherThing());
+
+// Instantiation with class name variable
+$className = 'AnotherThing';
+$var4 = new $className();

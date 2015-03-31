@@ -94,12 +94,8 @@ class CodeAnalyzer
 
     private function report()
     {
-        echo "\nFound classes:\n--------------\n";
         echo $this->definitionIndex . "\n";
 
-        echo "\n";
-        echo "Found instantiations:\n";
-        echo "---------------------\n";
         echo $this->usageIndex . "\n";
     }
 }

@@ -61,7 +61,10 @@ class DefinitionIndex
 
     public function __toString()
     {
-        $string = '';
+        $string = "\n";
+        $string .= "Found classes:\n";
+        $string .= "--------------\n";
+
         foreach ($this->index as $entry) {
             $string .= $entry['type'] . " ";
             $string .= $entry['fqn'] . "\n";
