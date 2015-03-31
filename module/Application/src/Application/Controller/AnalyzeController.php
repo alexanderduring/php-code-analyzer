@@ -11,7 +11,7 @@ class AnalyzeController extends AbstractActionController
     {
         $code = file_get_contents('data/code/test.php');
 
-        $analyzer = new CodeAnalyzer();
+        $analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
         $analyzer->analyze($code);
 
         return;

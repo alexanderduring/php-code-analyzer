@@ -2,13 +2,8 @@
 
 namespace Application\Model\CodeAnalyzer;
 
-use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
-use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
 use PhpParser\Error as PhpParserError;
-use PhpParser\Lexer;
-use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 
 // Comment in for debugging with var_dump()
@@ -29,6 +24,52 @@ class CodeAnalyzer
     /** @var Application\Model\CodeAnalyzer\UsageIndex */
     private $usageIndex;
 
+    /** @var PhpParser\Parser */
+    private $parser;
+
+    /** @var PhpParser\NodeTraverser */
+    private $traverser;
+
+
+
+    /**
+     * @param PhpParser\Parser $parser
+     */
+    public function injectParser(Parser $parser)
+    {
+        $this->parser = $parser;
+    }
+
+
+
+    /**
+     * @param PhpParser\NodeTraverser $traverser
+     */
+    public function injectTraverser(NodeTraverser $traverser)
+    {
+        $this->traverser = $traverser;
+    }
+
+
+
+    /**
+     * @param Application\Model\CodeAnalyzer\DefinitionIndex $index
+     */
+    public function injectDefinitionIndex(DefinitionIndex $index)
+    {
+        $this->definitionIndex = $index;
+    }
+
+
+
+    /**
+     * @param Application\Model\CodeAnalyzer\UsageIndex $index
+     */
+    public function injectUsageIndex(UsageIndex $index)
+    {
+        $this->usageIndex = $index;
+    }
+
 
 
     /**
@@ -36,30 +77,10 @@ class CodeAnalyzer
      */
     public function analyze($code)
     {
-        // Should be injected via factory
-        $parser = new Parser(new Lexer());
-        $traverser = new NodeTraverser();
-
-        // Add NameResolver to handle namespaces
-        $nameResolver = new NameResolver();
-        $traverser->addVisitor($nameResolver);
-
-        // Add our class definition indexer
-        $this->definitionIndex = new DefinitionIndex();
-        $classDefinitionIndexer = new ClassDefinitionIndexer();
-        $classDefinitionIndexer->injectIndex($this->definitionIndex);
-        $traverser->addVisitor($classDefinitionIndexer);
-
-        // Add our class usage indexer
-        $this->usageIndex = new UsageIndex();
-        $classUsageIndexer = new ClassUsageIndexer();
-        $classUsageIndexer->injectIndex($this->usageIndex);
-        $traverser->addVisitor($classUsageIndexer);
-
         try {
-            $nodes = $parser->parse($code);
+            $nodes = $this->parser->parse($code);
 //            var_dump($nodes);
-            $traverser->traverse($nodes);
+            $this->traverser->traverse($nodes);
 //            var_dump($traversedNodes);
         }
         catch (PhpParserError $exception) {

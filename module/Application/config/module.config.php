@@ -7,6 +7,11 @@ return array(
             'Application\Controller\Analyze' => 'Application\Controller\AnalyzeController'
         ),
     ),
+    'service_manager' => array(
+        'factories' => array(
+            'CodeAnalyzer' => 'Application\Model\CodeAnalyzer\CodeAnalyzerFactory'
+        )
+    ),
     'view_manager' => array(
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
