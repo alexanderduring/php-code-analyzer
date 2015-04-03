@@ -84,8 +84,18 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
         // "new" statement with variable
         if ($newNode->class->getType() == 'Expr_Variable') {
-            $variableName = $newNode->class->name;
+            $variableName = '$' . $newNode->class->name;
             $this->index->addInstantiationWithVariable($variableName, $file, $line);
         }
+
+        // "new" statement with static class variable
+        if ($newNode->class->getType() == 'Expr_StaticPropertyFetch') {
+            $fetchNode = $newNode->class;
+            $className = implode('\\', $fetchNode->class->parts);
+            $variableName = $fetchNode->name;
+            $fullName = $className . "::$" . $variableName;
+            $this->index->addInstantiationWithVariable($fullName, $file, $line);
+        }
+
     }
 }

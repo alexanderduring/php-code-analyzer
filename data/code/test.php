@@ -34,6 +34,8 @@ class Thing
 
 class AnotherThing
 {
+    static public $name = 'AnotherThing';
+
     public $property;
 }
 
@@ -57,3 +59,6 @@ $var3 = new Thing(new AnotherThing());
 // Instantiation with class name variable
 $className = 'AnotherThing';
 $var4 = new $className();
+
+// Instantiation with static class variable
+$var5 = new AnotherThing::$name();
