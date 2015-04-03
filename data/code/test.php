@@ -23,6 +23,7 @@ class Foo implements Barable
 class Thing
 {
     private $anotherThing;
+    public $name = 'AnotherThing';
 
     public function __construct(AnotherThing $anotherThing)
     {
@@ -62,3 +63,6 @@ $var4 = new $className();
 
 // Instantiation with static class variable
 $var5 = new AnotherThing::$name();
+
+// Instantiation with object property
+$var6 = new $var3->name();

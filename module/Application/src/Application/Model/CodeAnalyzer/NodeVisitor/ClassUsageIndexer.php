@@ -75,27 +75,33 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     {
         $file = 'not-implemented-yet.php';
         $line = $newNode->getLine();
+        $classNode = $newNode->class;
 
-        // "new" statement with fully qualified class name
-        if ($newNode->class->getType() == 'Name_FullyQualified') {
-            $name = implode('\\', $newNode->class->parts);
-            $this->index->addInstantiation($name, $file, $line);
+        switch ($classNode->getType()) {
+
+            // "new" statement with fully qualified class name
+            case 'Name_FullyQualified':
+                $name = implode('\\', $classNode->parts);
+                $this->index->addInstantiation($name, $file, $line);
+                break;
+
+            // "new" statement with variable
+            case 'Expr_Variable':
+                $variableName = '$' . $classNode->name;
+                $this->index->addInstantiationWithVariable($variableName, $file, $line);
+                break;
+
+            // "new" statement with static class variable
+            case 'Expr_StaticPropertyFetch':
+                $fetchNode = $classNode;
+                $className = implode('\\', $fetchNode->class->parts);
+                $variableName = $fetchNode->name;
+                $fullName = $className . "::$" . $variableName;
+                $this->index->addInstantiationWithVariable($fullName, $file, $line);
+                break;
+
+            default:
+                $this->index->addUnknownInstantiation($classNode->getType(), $file, $line);
         }
-
-        // "new" statement with variable
-        if ($newNode->class->getType() == 'Expr_Variable') {
-            $variableName = '$' . $newNode->class->name;
-            $this->index->addInstantiationWithVariable($variableName, $file, $line);
-        }
-
-        // "new" statement with static class variable
-        if ($newNode->class->getType() == 'Expr_StaticPropertyFetch') {
-            $fetchNode = $newNode->class;
-            $className = implode('\\', $fetchNode->class->parts);
-            $variableName = $fetchNode->name;
-            $fullName = $className . "::$" . $variableName;
-            $this->index->addInstantiationWithVariable($fullName, $file, $line);
-        }
-
     }
 }

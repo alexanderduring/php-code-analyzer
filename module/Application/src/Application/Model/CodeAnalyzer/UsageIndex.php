@@ -9,6 +9,7 @@ namespace Application\Model\CodeAnalyzer;
 class UsageIndex
 {
     const NOTICE_NEW_WITH_VARIABLE = 'NEW_WITH_VARIABLE';
+    const NOTICE_UNKNOWN_NEW = 'UNKNOWN_NEW';
 
     /** @var array */
     private $index = array(
@@ -50,6 +51,23 @@ class UsageIndex
 
 
 
+    /**
+     * @param string $nodeType
+     * @param string $file
+     * @param integer $line
+     */
+    public function addUnknownInstantiation($nodeType, $file, $line)
+    {
+        $this->index['notices'][] = array(
+            'type' => self::NOTICE_UNKNOWN_NEW,
+            'nodeType' => $nodeType,
+            'file' => $file,
+            'line' => $line
+        );
+    }
+
+
+
     public function __toString()
     {
         $string = "\n";
@@ -70,7 +88,9 @@ class UsageIndex
             switch ($notice['type']) {
                 case self::NOTICE_NEW_WITH_VARIABLE:
                     $string .= "New with variable (" . $notice['variable'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";
-
+                break;
+                case self::NOTICE_UNKNOWN_NEW:
+                    $string .= "New with unknown structure (" . $notice['nodeType'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";
             }
 
             foreach ($entry['new'] as $instantiation) {
