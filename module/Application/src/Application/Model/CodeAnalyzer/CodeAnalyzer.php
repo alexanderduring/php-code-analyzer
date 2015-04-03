@@ -5,6 +5,9 @@ namespace Application\Model\CodeAnalyzer;
 use PhpParser\Error as PhpParserError;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
 
 // Comment in for debugging with var_dump()
 //ini_set('xdebug.var_display_max_depth', 5);
@@ -73,10 +76,35 @@ class CodeAnalyzer
 
 
     /**
+     * @param string $path
+     */
+    public function processDirectory($path)
+    {
+        $path = realpath($path);
+
+        // iterate over all .php files in the directory
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+        $files = new RegexIterator($iterator, '/\.php$/');
+
+        foreach ($files as $file) {
+            $filename = ltrim(str_replace($path, '', $file->getPathName()), '/');
+            $code = file_get_contents($file);
+
+            $this->analyze($filename, $code);
+        }
+    }
+
+
+
+    /**
+     * @param string $filename
      * @param string $code
      */
-    public function analyze($code)
+    public function analyze($filename, $code)
     {
+        $this->definitionIndex->setFilename($filename);
+        $this->usageIndex->setFilename($filename);
+
         try {
             $nodes = $this->parser->parse($code);
             $this->traverser->traverse($nodes);

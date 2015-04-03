@@ -6,14 +6,19 @@ use Zend\Mvc\Controller\AbstractActionController;
 
 class AnalyzeController extends AbstractActionController
 {
+    /** @var Application\Model\CodeAnalyzer\CodeAnalyzer */
+    private $analyzer;
+
+
+
     public function runAction()
     {
         $code = file_get_contents('data/code/test.php');
 
-        $analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
-        $analyzer->analyze($code);
+        $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
+        $this->analyzer->processDirectory('data/code');
 
-        $analyzer->report();
+        $this->analyzer->report();
 
         return;
     }

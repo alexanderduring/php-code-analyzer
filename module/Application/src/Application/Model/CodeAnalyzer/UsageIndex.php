@@ -17,17 +17,29 @@ class UsageIndex
         'notices' => array()
     );
 
+    /** @var string */
+    private $filename;
+
+
+
+    /**
+     * @param string $filename
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+    }
+
 
 
     /**
      * @param string $fullyQualifiedName
-     * @param string $file
      * @param integer $line
      */
-    public function addInstantiation($fullyQualifiedName, $file, $line)
+    public function addInstantiation($fullyQualifiedName, $line)
     {
         $this->index['usages'][$fullyQualifiedName]['new'][] = array(
-            'file' => $file,
+            'file' => $this->filename,
             'line' => $line
         );
     }
@@ -36,15 +48,14 @@ class UsageIndex
 
     /**
      * @param string $variableName
-     * @param string $file
      * @param integer $line
      */
-    public function addInstantiationWithVariable($variableName, $file, $line)
+    public function addInstantiationWithVariable($variableName, $line)
     {
         $this->index['notices'][] = array(
             'type' => self::NOTICE_NEW_WITH_VARIABLE,
             'variable' => $variableName,
-            'file' => $file,
+            'file' => $this->filename,
             'line' => $line
         );
     }
@@ -53,15 +64,14 @@ class UsageIndex
 
     /**
      * @param string $nodeType
-     * @param string $file
      * @param integer $line
      */
-    public function addUnknownInstantiation($nodeType, $file, $line)
+    public function addUnknownInstantiation($nodeType, $line)
     {
         $this->index['notices'][] = array(
             'type' => self::NOTICE_UNKNOWN_NEW,
             'nodeType' => $nodeType,
-            'file' => $file,
+            'file' => $this->filename,
             'line' => $line
         );
     }

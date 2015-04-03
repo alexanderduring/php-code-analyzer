@@ -14,6 +14,19 @@ class DefinitionIndex
     /** @var array */
     private $index = array();
 
+    /** @var string */
+    private $filename;
+
+
+
+    /**
+     * @param string $filename
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+    }
+
 
 
     /**
@@ -24,7 +37,8 @@ class DefinitionIndex
     {
         $this->index[$fullyQualifiedName] = array(
             'fqn' => $fullyQualifiedName,
-            'type' => $type
+            'type' => $type,
+            'file' => $this->filename
         );
     }
 
@@ -67,7 +81,8 @@ class DefinitionIndex
 
         foreach ($this->index as $entry) {
             $string .= $entry['type'] . " ";
-            $string .= $entry['fqn'] . "\n";
+            $string .= $entry['fqn'] . ", ";
+            $string .= $entry['file'] . "\n";
         }
 
         return $string;

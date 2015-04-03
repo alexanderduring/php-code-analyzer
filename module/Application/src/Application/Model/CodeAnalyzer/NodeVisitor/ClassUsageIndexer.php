@@ -73,7 +73,6 @@ class ClassUsageIndexer extends NodeVisitorAbstract
      */
     private function analyzeInstantiation(Node $newNode)
     {
-        $file = 'not-implemented-yet.php';
         $line = $newNode->getLine();
         $classNode = $newNode->class;
 
@@ -82,13 +81,13 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             // "new" statement with fully qualified class name
             case 'Name_FullyQualified':
                 $name = implode('\\', $classNode->parts);
-                $this->index->addInstantiation($name, $file, $line);
+                $this->index->addInstantiation($name, $line);
                 break;
 
             // "new" statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addInstantiationWithVariable($variableName, $file, $line);
+                $this->index->addInstantiationWithVariable($variableName, $line);
                 break;
 
             // "new" statement with static class variable
@@ -97,11 +96,11 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $className = implode('\\', $fetchNode->class->parts);
                 $variableName = $fetchNode->name;
                 $fullName = $className . "::$" . $variableName;
-                $this->index->addInstantiationWithVariable($fullName, $file, $line);
+                $this->index->addInstantiationWithVariable($fullName, $line);
                 break;
 
             default:
-                $this->index->addUnknownInstantiation($classNode->getType(), $file, $line);
+                $this->index->addUnknownInstantiation($classNode->getType(), $line);
         }
     }
 }
