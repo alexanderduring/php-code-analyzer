@@ -42,27 +42,33 @@ class AnotherThing
 
 
 
-// Instantiation in an assignment
-$var = new Foo();
-$var->bar();
+class Main
+{
+    public function __construct()
+    {
+        // Instantiation in an assignment
+        $var = new Foo();
+        $var->bar();
 
-// Instantiation in an assignment
-$var2 = new Baz\Foo();
+        // Instantiation in an assignment
+        $var2 = new Baz\Foo();
 
-// Instantiation in an array
-$list = array(
-    'instance' => new Foo()
-);
+        // Instantiation in an array
+        $list = array(
+            'instance' => new Foo()
+        );
 
-// Instantiation in a function call
-$var3 = new Thing(new AnotherThing());
+        // Instantiation in a function call
+        $var3 = new Thing(new AnotherThing());
 
-// Instantiation with class name variable
-$className = 'AnotherThing';
-$var4 = new $className();
+        // Instantiation with class name variable
+        $className = 'AnotherThing';
+        $var4 = new $className();
 
-// Instantiation with static class variable
-$var5 = new AnotherThing::$name();
+        // Instantiation with static class variable
+        $var5 = new AnotherThing::$name();
 
-// Instantiation with object property
-$var6 = new $var3->name();
+        // Instantiation with object property
+        $var6 = new $var3->name();
+    }
+}
