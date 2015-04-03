@@ -2,7 +2,6 @@
 
 namespace Application\Controller;
 
-use Application\Model\CodeAnalyzer\CodeAnalyzer;
 use Zend\Mvc\Controller\AbstractActionController;
 
 class AnalyzeController extends AbstractActionController
@@ -13,6 +12,8 @@ class AnalyzeController extends AbstractActionController
 
         $analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
         $analyzer->analyze($code);
+
+        $analyzer->report();
 
         return;
     }

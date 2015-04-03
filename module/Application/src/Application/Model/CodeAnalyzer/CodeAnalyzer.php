@@ -79,23 +79,18 @@ class CodeAnalyzer
     {
         try {
             $nodes = $this->parser->parse($code);
-//            var_dump($nodes);
             $this->traverser->traverse($nodes);
-//            var_dump($traversedNodes);
         }
         catch (PhpParserError $exception) {
             echo 'Parse Error: ', $exception->getMessage();
         }
-
-        $this->report();
     }
 
 
 
-    private function report()
+    public function report()
     {
         echo $this->definitionIndex . "\n";
-
         echo $this->usageIndex . "\n";
     }
 }
