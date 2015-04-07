@@ -48,7 +48,7 @@ return array(
                 'first-route' => array(
                     'type' => 'simple',
                     'options' => array(
-                        'route'    => 'run',
+                        'route'    => 'run <path>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Analyze',
                             'action'     => 'run'

@@ -13,12 +13,16 @@ class AnalyzeController extends AbstractActionController
 
     public function runAction()
     {
-        $code = file_get_contents('data/code/test.php');
+        $path = $this->getRequest()->getParam('path');
 
-        $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
-        $this->analyzer->processDirectory('data/code');
+        if (file_exists($path)) {
+            $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
+            $this->analyzer->process($path);
 
-        $this->analyzer->report();
+            $this->analyzer->report();
+        } else {
+            echo "The file/folder " . $path . " does not exist.\n";
+        }
 
         return;
     }
