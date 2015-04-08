@@ -99,6 +99,44 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $this->index->addInstantiationWithVariable($fullName, $line);
                 break;
 
+            // "new" statement on array entry
+            case 'Expr_ArrayDimFetch':
+                /*
+                    Example:
+                    $instance = new $classes['third'];
+
+
+                    object(PhpParser\Node\Expr\ArrayDimFetch)#280 (4) {
+                        ["var"] => object(PhpParser\Node\Expr\Variable)#282 (3) {
+                            ["name"] => string(7) "classes"
+                            ["subNodeNames":"PhpParser\NodeAbstract":private] => NULL
+                            ["attributes":protected] => array(2) {
+                                ["startLine"] => int(14)
+                                ["endLine"] => int(14)
+                            }
+                        }
+                        ["dim"] => object(PhpParser\Node\Scalar\String_)#281 (3) {
+                            ["value"] => string(5) "third"
+                            ["subNodeNames":"PhpParser\NodeAbstract":private] => NULL
+                            ["attributes":protected] => array(2) {
+                                ["startLine"] => int(14)
+                                ["endLine"] => int(14)
+                            }
+                        }
+                        ["subNodeNames":"PhpParser\NodeAbstract":private] => NULL
+                        ["attributes":protected] => array(2) {
+                            ["startLine"] => int(14)
+                            ["endLine"] => int(14)
+                        }
+                    }
+                */
+                $fetchNode = $classNode;
+                $variableName = '$' . $fetchNode->var->name;
+                $dimension = $fetchNode->dim->value;
+                $fullName = $variableName . "['" . $dimension . "']";
+                $this->index->addInstantiationWithVariable($fullName, $line);
+                break;
+
             default:
                 $this->index->addUnknownInstantiation($classNode->getType(), $line);
         }

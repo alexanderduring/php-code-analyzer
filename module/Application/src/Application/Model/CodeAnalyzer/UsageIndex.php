@@ -97,7 +97,7 @@ class UsageIndex
         foreach ($this->index['notices'] as $notice) {
             switch ($notice['type']) {
                 case self::NOTICE_NEW_WITH_VARIABLE:
-                    $string .= "New with variable (" . $notice['variable'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";
+                    $string .= "New with variable (new " . $notice['variable'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";
                 break;
                 case self::NOTICE_UNKNOWN_NEW:
                     $string .= "New with unknown structure (" . $notice['nodeType'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";

@@ -6,4 +6,13 @@ class House
     {
         echo "This is a house!";
     }
+
+
+
+    public function instantiateTheThird(array $classes)
+    {
+        $instance = new $classes['third'];
+
+        return $instance;
+    }
 }
