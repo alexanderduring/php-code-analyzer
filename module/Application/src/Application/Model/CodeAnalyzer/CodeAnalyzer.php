@@ -77,6 +77,26 @@ class CodeAnalyzer
 
 
     /**
+     * @return Application\Model\CodeAnalyzer\DefinitionIndex
+     */
+    public function getDefinitionIndex()
+    {
+        return $this->definitionIndex;
+    }
+
+
+
+    /**
+     * @return Application\Model\CodeAnalyzer\UsageIndex
+     */
+    public function getUsageIndex()
+    {
+        return $this->usageIndex;
+    }
+
+
+
+    /**
      * @param string $path
      */
     public function process($path)
@@ -149,13 +169,5 @@ class CodeAnalyzer
         catch (PhpParserError $exception) {
             echo 'Parse Error: ', $exception->getMessage();
         }
-    }
-
-
-
-    public function report()
-    {
-        echo $this->definitionIndex . "\n";
-        echo $this->usageIndex . "\n";
     }
 }
