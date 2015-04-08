@@ -90,10 +90,7 @@ class UsageIndex
         foreach ($this->index['usages'] as $className => $entry) {
             foreach ($entry['new'] as $instantiation) {
                 $string .= "New " . $className;
-
-                $context = $instantiation['context'];
-                $string .= " in " . $context['class-type'] . " " . $context['class-name'];
-
+                $string .= " in " . $instantiation['context'];
                 $string .= " (" . $instantiation['file'] . ", line " . $instantiation['line'] . ")\n";
             }
         }
@@ -112,8 +109,7 @@ class UsageIndex
                     $string .= "New with unknown structure (" . $notice['nodeType'] . ")";
             }
 
-            $context = $notice['context'];
-            $string .= " in " . $context['class-type'] . " " . $context['class-name'];
+            $string .= " in " . $notice['context'];
             $string .= " (" . $notice['file'] . ", line " . $notice['line'] . ")\n";
         }
 

@@ -15,7 +15,8 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     /** @var Application\Model\CodeAnalyzer\UsageIndex */
     private $index;
 
-    private $context = array(array('class-type' => 'global', 'class-name' => 'global'));
+    private $context = array('global');
+
 
 
     /**
@@ -44,19 +45,13 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     {
         if ($node->getType() == 'Stmt_Class') {
             $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
-            $context = array(
-                'class-type' => 'class',
-                'class-name' => $fullyQualifiedClassName
-            );
+            $context = $fullyQualifiedClassName;
             array_unshift($this->context, $context);
         }
 
         if ($node->getType() == 'Stmt_Interface') {
             $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
-            $context = array(
-                'class-type' => 'interface',
-                'class-name' => $fullyQualifiedClassName
-            );
+            $context = $fullyQualifiedClassName;
             array_unshift($this->context, $context);
         }
 
