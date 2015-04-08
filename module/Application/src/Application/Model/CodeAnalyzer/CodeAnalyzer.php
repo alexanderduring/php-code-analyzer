@@ -81,10 +81,12 @@ class CodeAnalyzer
      */
     public function process($path)
     {
-        if (is_dir($path)) {
-            $this->processDirectory($path);
+        $realPath = realpath($path);
+
+        if (is_dir($realPath)) {
+            $this->processDirectory($realPath);
         } else {
-            $this->processFile($path);
+            $this->processFile($realPath);
         }
     }
 
