@@ -31,9 +31,26 @@ class AnalyzeController extends AbstractActionController
 
     private function report()
     {
-        echo $this->analyzer->getDefinitionIndex() . "\n\n";
+        $this->reportDefinitions();
         $this->reportUsages();
         $this->reportNotices();
+    }
+
+
+
+    private function reportDefinitions()
+    {
+        echo "\nFound classes:\n--------------\n";
+
+        $definitionIndex = $this->analyzer->getDefinitionIndex();
+        foreach ($definitionIndex->getDefinitions() as $definition) {
+            $string = $definition['type'] . " ";
+            $string .= $definition['fqn'] . ", ";
+            $string .= $definition['file'] . "\n";
+            echo $string;
+        }
+
+        echo "\n\n";
     }
 
 

@@ -73,18 +73,11 @@ class DefinitionIndex
 
 
 
-    public function __toString()
+    /**
+     * @return array
+     */
+    public function getDefinitions()
     {
-        $string = "\n";
-        $string .= "Found classes:\n";
-        $string .= "--------------\n";
-
-        foreach ($this->index as $entry) {
-            $string .= $entry['type'] . " ";
-            $string .= $entry['fqn'] . ", ";
-            $string .= $entry['file'] . "\n";
-        }
-
-        return $string;
+        return $this->index;
     }
 }
