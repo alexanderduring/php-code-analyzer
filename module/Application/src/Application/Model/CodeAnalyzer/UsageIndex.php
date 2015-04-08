@@ -104,9 +104,10 @@ class UsageIndex
             switch ($notice['type']) {
                 case self::NOTICE_NEW_WITH_VARIABLE:
                     $string .= "New with variable (new " . $notice['variable'] . ")";
-                break;
+                    break;
                 case self::NOTICE_UNKNOWN_NEW:
                     $string .= "New with unknown structure (" . $notice['nodeType'] . ")";
+                    break;
             }
 
             $string .= " in " . $notice['context'];
