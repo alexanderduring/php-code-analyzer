@@ -81,39 +81,21 @@ class UsageIndex
 
 
 
-    public function __toString()
+    /**
+     * @return array
+     */
+    public function getUsages()
     {
-        $string = "\n";
-        $string .= "Found instantiations:\n";
-        $string .= "---------------------\n";
+        return $this->index['usages'];
+    }
 
-        foreach ($this->index['usages'] as $className => $entry) {
-            foreach ($entry['new'] as $instantiation) {
-                $string .= "New " . $className;
-                $string .= " in " . $instantiation['context'];
-                $string .= " (" . $instantiation['file'] . ", line " . $instantiation['line'] . ")\n";
-            }
-        }
 
-        $string .= "\n";
-        $string .= "Notices:\n";
-        $string .= "--------\n";
 
-        foreach ($this->index['notices'] as $notice) {
-
-            switch ($notice['type']) {
-                case self::NOTICE_NEW_WITH_VARIABLE:
-                    $string .= "New with variable (new " . $notice['variable'] . ")";
-                    break;
-                case self::NOTICE_UNKNOWN_NEW:
-                    $string .= "New with unknown structure (" . $notice['nodeType'] . ")";
-                    break;
-            }
-
-            $string .= " in " . $notice['context'];
-            $string .= " (" . $notice['file'] . ", line " . $notice['line'] . ")\n";
-        }
-
-        return $string;
+    /**
+     * @return array
+     */
+    public function getNotices()
+    {
+        return $this->index['notices'];
     }
 }

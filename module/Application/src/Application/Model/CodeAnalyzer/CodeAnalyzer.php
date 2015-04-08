@@ -22,22 +22,22 @@ use SplFileInfo;
  */
 class CodeAnalyzer
 {
-    /** @var Application\Model\CodeAnalyzer\DefinitionIndex */
+    /** @var \Application\Model\CodeAnalyzer\DefinitionIndex */
     private $definitionIndex;
 
-    /** @var Application\Model\CodeAnalyzer\UsageIndex */
+    /** @var \Application\Model\CodeAnalyzer\UsageIndex */
     private $usageIndex;
 
-    /** @var PhpParser\Parser */
+    /** @var \PhpParser\Parser */
     private $parser;
 
-    /** @var PhpParser\NodeTraverser */
+    /** @var \PhpParser\NodeTraverser */
     private $traverser;
 
 
 
     /**
-     * @param PhpParser\Parser $parser
+     * @param \PhpParser\Parser $parser
      */
     public function injectParser(Parser $parser)
     {
@@ -47,7 +47,7 @@ class CodeAnalyzer
 
 
     /**
-     * @param PhpParser\NodeTraverser $traverser
+     * @param \PhpParser\NodeTraverser $traverser
      */
     public function injectTraverser(NodeTraverser $traverser)
     {
@@ -57,7 +57,7 @@ class CodeAnalyzer
 
 
     /**
-     * @param Application\Model\CodeAnalyzer\DefinitionIndex $index
+     * @param \Application\Model\CodeAnalyzer\DefinitionIndex $index
      */
     public function injectDefinitionIndex(DefinitionIndex $index)
     {
@@ -67,7 +67,7 @@ class CodeAnalyzer
 
 
     /**
-     * @param Application\Model\CodeAnalyzer\UsageIndex $index
+     * @param \Application\Model\CodeAnalyzer\UsageIndex $index
      */
     public function injectUsageIndex(UsageIndex $index)
     {
@@ -77,7 +77,7 @@ class CodeAnalyzer
 
 
     /**
-     * @return Application\Model\CodeAnalyzer\DefinitionIndex
+     * @return \Application\Model\CodeAnalyzer\DefinitionIndex
      */
     public function getDefinitionIndex()
     {
@@ -87,7 +87,7 @@ class CodeAnalyzer
 
 
     /**
-     * @return Application\Model\CodeAnalyzer\UsageIndex
+     * @return \Application\Model\CodeAnalyzer\UsageIndex
      */
     public function getUsageIndex()
     {

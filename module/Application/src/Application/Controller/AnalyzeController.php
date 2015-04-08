@@ -31,7 +31,57 @@ class AnalyzeController extends AbstractActionController
 
     private function report()
     {
-        echo $this->analyzer->getDefinitionIndex() . "\n";
-        echo $this->analyzer->getUsageIndex() . "\n";
+        echo $this->analyzer->getDefinitionIndex() . "\n\n";
+        $this->reportUsages();
+        $this->reportNotices();
+    }
+
+
+
+    private function reportUsages()
+    {
+        echo "Found instantiations:\n---------------------\n";
+
+        $usageIndex = $this->analyzer->getUsageIndex();
+        foreach ($usageIndex->getUsages() as $class => $usages) {
+            echo "Instantiations of " . $class . ":\n";
+
+            foreach ($usages['new'] as $instantiation) {
+                $text = "  in " . $instantiation['context'];
+                $text .= " (file: " . $instantiation['file'] . ", line: " . $instantiation['line'] .")\n";
+                echo $text;
+            }
+
+            echo "\n";
+        }
+
+        echo "\n";
+    }
+
+
+
+    private function reportNotices()
+    {
+        echo "Notices:\n--------\n";
+
+        $usageIndex = $this->analyzer->getUsageIndex();
+        foreach ($usageIndex->getNotices() as $notice) {
+
+            switch ($notice['type']) {
+                case \Application\Model\CodeAnalyzer\UsageIndex::NOTICE_NEW_WITH_VARIABLE:
+                    $string = "New with variable (new " . $notice['variable'] . ")";
+                    break;
+                case \Application\Model\CodeAnalyzer\UsageIndex::NOTICE_UNKNOWN_NEW:
+                    $string = "New with unknown structure (" . $notice['nodeType'] . ")";
+                    break;
+            }
+
+            $string .= " in " . $notice['context'];
+            $string .= " (" . $notice['file'] . ", line " . $notice['line'] . ")\n";
+
+            echo $string;
+        }
+
+        echo "\n";
     }
 }
