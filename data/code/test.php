@@ -38,6 +38,11 @@ class AnotherThing
     static public $name = 'AnotherThing';
 
     public $property;
+
+    public function open()
+    {
+        echo "open!";
+    }
 }
 
 
@@ -72,3 +77,6 @@ class Main
         $var6 = new $var3->name();
     }
 }
+
+$var7 = new Main();
+$var8 = new Thing(new AnotherThing());

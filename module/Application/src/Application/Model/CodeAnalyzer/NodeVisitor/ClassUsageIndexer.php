@@ -15,6 +15,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     /** @var Application\Model\CodeAnalyzer\UsageIndex */
     private $index;
 
+    private $context = array(array('class-type' => 'global', 'class-name' => 'global'));
 
 
     /**
@@ -41,6 +42,24 @@ class ClassUsageIndexer extends NodeVisitorAbstract
      */
     public function enterNode(Node $node)
     {
+        if ($node->getType() == 'Stmt_Class') {
+            $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
+            $context = array(
+                'class-type' => 'class',
+                'class-name' => $fullyQualifiedClassName
+            );
+            array_unshift($this->context, $context);
+        }
+
+        if ($node->getType() == 'Stmt_Interface') {
+            $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
+            $context = array(
+                'class-type' => 'interface',
+                'class-name' => $fullyQualifiedClassName
+            );
+            array_unshift($this->context, $context);
+        }
+
         // Found "new" node
         if ($node->getType() == 'Expr_New') {
             $this->analyzeInstantiation($node);
@@ -54,6 +73,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
      */
     public function leaveNode(Node $node)
     {
+        if (in_array($node->getType(), array('Stmt_Class', 'Stmt_Interface'))) {
+            array_shift($this->context);
+        }
     }
 
 
@@ -81,13 +103,13 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             // "new" statement with fully qualified class name
             case 'Name_FullyQualified':
                 $name = implode('\\', $classNode->parts);
-                $this->index->addInstantiation($name, $line);
+                $this->index->addInstantiation($name, $this->getContext(), $line);
                 break;
 
             // "new" statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addInstantiationWithVariable($variableName, $line);
+                $this->index->addInstantiationWithVariable($variableName, $this->getContext(), $line);
                 break;
 
             // "new" statement with static class variable
@@ -96,7 +118,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $className = implode('\\', $fetchNode->class->parts);
                 $variableName = $fetchNode->name;
                 $fullName = $className . "::$" . $variableName;
-                $this->index->addInstantiationWithVariable($fullName, $line);
+                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $line);
                 break;
 
             // "new" statement on array entry
@@ -134,11 +156,21 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $variableName = '$' . $fetchNode->var->name;
                 $dimension = $fetchNode->dim->value;
                 $fullName = $variableName . "['" . $dimension . "']";
-                $this->index->addInstantiationWithVariable($fullName, $line);
+                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $line);
                 break;
 
             default:
-                $this->index->addUnknownInstantiation($classNode->getType(), $line);
+                $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $line);
         }
+    }
+
+
+
+    /**
+     * @return string
+     */
+    private function getContext()
+    {
+        return $this->context[0];
     }
 }

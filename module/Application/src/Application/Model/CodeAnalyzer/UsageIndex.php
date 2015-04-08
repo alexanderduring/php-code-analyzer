@@ -36,9 +36,10 @@ class UsageIndex
      * @param string $fullyQualifiedName
      * @param integer $line
      */
-    public function addInstantiation($fullyQualifiedName, $line)
+    public function addInstantiation($fullyQualifiedName, $context, $line)
     {
         $this->index['usages'][$fullyQualifiedName]['new'][] = array(
+            'context' => $context,
             'file' => $this->filename,
             'line' => $line
         );
@@ -50,11 +51,12 @@ class UsageIndex
      * @param string $variableName
      * @param integer $line
      */
-    public function addInstantiationWithVariable($variableName, $line)
+    public function addInstantiationWithVariable($variableName, $context, $line)
     {
         $this->index['notices'][] = array(
             'type' => self::NOTICE_NEW_WITH_VARIABLE,
             'variable' => $variableName,
+            'context' => $context,
             'file' => $this->filename,
             'line' => $line
         );
@@ -66,11 +68,12 @@ class UsageIndex
      * @param string $nodeType
      * @param integer $line
      */
-    public function addUnknownInstantiation($nodeType, $line)
+    public function addUnknownInstantiation($nodeType, $context, $line)
     {
         $this->index['notices'][] = array(
             'type' => self::NOTICE_UNKNOWN_NEW,
             'nodeType' => $nodeType,
+            'context' => $context,
             'file' => $this->filename,
             'line' => $line
         );
@@ -86,7 +89,12 @@ class UsageIndex
 
         foreach ($this->index['usages'] as $className => $entry) {
             foreach ($entry['new'] as $instantiation) {
-                $string .= $className . ": " . $instantiation['file'] . ", line " . $instantiation['line'] . "\n";
+                $string .= "New " . $className;
+
+                $context = $instantiation['context'];
+                $string .= " in " . $context['class-type'] . " " . $context['class-name'];
+
+                $string .= " (" . $instantiation['file'] . ", line " . $instantiation['line'] . ")\n";
             }
         }
 
@@ -95,16 +103,18 @@ class UsageIndex
         $string .= "--------\n";
 
         foreach ($this->index['notices'] as $notice) {
+
             switch ($notice['type']) {
                 case self::NOTICE_NEW_WITH_VARIABLE:
-                    $string .= "New with variable (new " . $notice['variable'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";
+                    $string .= "New with variable (new " . $notice['variable'] . ")";
                 break;
                 case self::NOTICE_UNKNOWN_NEW:
-                    $string .= "New with unknown structure (" . $notice['nodeType'] . ") in "  . $notice['file'] . ", line " . $notice['line'] . "\n";
+                    $string .= "New with unknown structure (" . $notice['nodeType'] . ")";
             }
 
-            foreach ($entry['new'] as $instantiation) {
-            }
+            $context = $notice['context'];
+            $string .= " in " . $context['class-type'] . " " . $context['class-name'];
+            $string .= " (" . $notice['file'] . ", line " . $notice['line'] . ")\n";
         }
 
         return $string;
