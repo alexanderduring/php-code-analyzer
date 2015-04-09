@@ -8,6 +8,6 @@
     "require": {
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.3.*",
-        "nikic/php-parser": "1.2.0"
+        "nikic/php-parser": "1.2.2"
     }
 }
