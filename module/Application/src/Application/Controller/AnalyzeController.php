@@ -20,9 +20,22 @@ class AnalyzeController extends AbstractActionController
             $this->analyzer->process($path);
 
             $this->storeResults();
-            $this->reportResults();
+            echo "Analyzing finished.\n";
         } else {
             echo "The file/folder " . $path . " does not exist.\n";
+        }
+
+        return;
+    }
+
+
+
+    public function reportAction()
+    {
+        if (file_exists('data/results/results.json')) {
+            $this->reportResults();
+        } else {
+            echo "Nothing to report.";
         }
 
         return;
@@ -57,8 +70,6 @@ class AnalyzeController extends AbstractActionController
             $this->reportDefinitions($results['definitions']);
             $this->reportUsages($results['usages']);
             $this->reportNotices($results['notices']);
-        } else {
-            echo "Nothing to report.";
         }
     }
 

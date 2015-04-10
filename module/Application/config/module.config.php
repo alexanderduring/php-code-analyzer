@@ -45,13 +45,23 @@ return array(
     'console' => array(
         'router' => array(
             'routes' => array(
-                'first-route' => array(
+                'analyzer-run' => array(
                     'type' => 'simple',
                     'options' => array(
                         'route'    => 'run <path>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Analyze',
                             'action'     => 'run'
+                        )
+                    )
+                ),
+                'analyzer-report' => array(
+                    'type' => 'simple',
+                    'options' => array(
+                        'route'    => 'report',
+                        'defaults' => array(
+                            'controller' => 'Application\Controller\Analyze',
+                            'action'     => 'report'
                         )
                     )
                 )
