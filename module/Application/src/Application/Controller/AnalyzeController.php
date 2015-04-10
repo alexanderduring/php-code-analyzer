@@ -19,7 +19,8 @@ class AnalyzeController extends AbstractActionController
             $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
             $this->analyzer->process($path);
 
-            $this->report();
+            $this->storeResults();
+            $this->reportResults();
         } else {
             echo "The file/folder " . $path . " does not exist.\n";
         }
@@ -29,21 +30,45 @@ class AnalyzeController extends AbstractActionController
 
 
 
-    private function report()
+    private function storeResults()
     {
-        $this->reportDefinitions();
-        $this->reportUsages();
-        $this->reportNotices();
+        $definitionIndex = $this->analyzer->getDefinitionIndex();
+        $definitions = $definitionIndex->getDefinitions();
+
+        $usageIndex = $this->analyzer->getUsageIndex();
+        $usages = $usageIndex->getUsages();
+        $notices = $usageIndex->getNotices();
+
+        $results = array(
+            'definitions' => $definitions,
+            'usages' => $usages,
+            'notices' => $notices
+        );
+
+        file_put_contents('data/results/results.json', json_encode($results));
     }
 
 
 
-    private function reportDefinitions()
+    private function reportResults()
+    {
+        if (file_exists('data/results/results.json')) {
+            $results = json_decode(file_get_contents('data/results/results.json'), true);
+            $this->reportDefinitions($results['definitions']);
+            $this->reportUsages($results['usages']);
+            $this->reportNotices($results['notices']);
+        } else {
+            echo "Nothing to report.";
+        }
+    }
+
+
+
+    private function reportDefinitions($definitions)
     {
         echo "\nFound classes:\n--------------\n";
 
-        $definitionIndex = $this->analyzer->getDefinitionIndex();
-        foreach ($definitionIndex->getDefinitions() as $definition) {
+        foreach ($definitions as $definition) {
             $string = $definition['type'] . " ";
             $string .= $definition['fqn'] . ", ";
             $string .= $definition['file'] . "\n";
@@ -55,12 +80,11 @@ class AnalyzeController extends AbstractActionController
 
 
 
-    private function reportUsages()
+    private function reportUsages($usages)
     {
         echo "Found instantiations:\n---------------------\n";
 
-        $usageIndex = $this->analyzer->getUsageIndex();
-        foreach ($usageIndex->getUsages() as $class => $usages) {
+        foreach ($usages as $class => $usages) {
             echo "Instantiations of " . $class . ":\n";
 
             foreach ($usages['new'] as $instantiation) {
@@ -77,12 +101,11 @@ class AnalyzeController extends AbstractActionController
 
 
 
-    private function reportNotices()
+    private function reportNotices($notices)
     {
         echo "Notices:\n--------\n";
 
-        $usageIndex = $this->analyzer->getUsageIndex();
-        foreach ($usageIndex->getNotices() as $notice) {
+        foreach ($notices as $notice) {
 
             switch ($notice['type']) {
                 case \Application\Model\CodeAnalyzer\UsageIndex::NOTICE_NEW_WITH_VARIABLE:
