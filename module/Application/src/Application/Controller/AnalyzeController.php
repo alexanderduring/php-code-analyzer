@@ -14,10 +14,19 @@ class AnalyzeController extends AbstractActionController
     public function runAction()
     {
         $path = $this->getRequest()->getParam('path');
+        $ignoresString = $this->getRequest()->getParam('ignore');
+
+        $ignores = array();
+        if (is_string($ignoresString)) {
+            $cleanedIgnores = str_replace(' ', '', $ignoresString);
+            if (strlen($cleanedIgnores) > 0) {
+                $ignores = explode(',', $cleanedIgnores);
+            }
+        }
 
         if (file_exists($path)) {
             $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
-            $this->analyzer->process($path);
+            $this->analyzer->process($path, $ignores);
 
             $this->storeResults();
             echo "Analyzing finished.\n";

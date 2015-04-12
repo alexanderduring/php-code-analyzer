@@ -99,12 +99,12 @@ class CodeAnalyzer
     /**
      * @param string $path
      */
-    public function process($path)
+    public function process($path, $ignores)
     {
         $realPath = realpath($path);
 
         if (is_dir($realPath)) {
-            $this->processDirectory($realPath);
+            $this->processDirectory($realPath, $ignores);
         } else {
             $this->processFile($realPath);
         }
@@ -126,10 +126,13 @@ class CodeAnalyzer
     /**
      * @param string $path
      */
-    private function processDirectory($path)
+    private function processDirectory($path, $ignores)
     {
         // iterate over all .php files in the directory
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+        $directoryIterator = new RecursiveDirectoryIterator($path);
+        $filterIterator = new RecursiveFilterIterator($directoryIterator);
+        $filterIterator->setIgnores($ignores);
+        $iterator = new RecursiveIteratorIterator($filterIterator);
         $files = new RegexIterator($iterator, '/\.php$/');
 
         foreach ($files as $file) {

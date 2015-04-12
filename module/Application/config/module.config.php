@@ -46,9 +46,8 @@ return array(
         'router' => array(
             'routes' => array(
                 'analyzer-run' => array(
-                    'type' => 'simple',
                     'options' => array(
-                        'route'    => 'run <path>',
+                        'route'    => 'run [--ignore=] <path>',
                         'defaults' => array(
                             'controller' => 'Application\Controller\Analyze',
                             'action'     => 'run'
@@ -56,7 +55,6 @@ return array(
                     )
                 ),
                 'analyzer-report' => array(
-                    'type' => 'simple',
                     'options' => array(
                         'route'    => 'report',
                         'defaults' => array(
