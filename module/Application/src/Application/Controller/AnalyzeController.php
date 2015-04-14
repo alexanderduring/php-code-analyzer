@@ -14,15 +14,7 @@ class AnalyzeController extends AbstractActionController
     public function runAction()
     {
         $path = $this->getRequest()->getParam('path');
-        $ignoresString = $this->getRequest()->getParam('ignore');
-
-        $ignores = array();
-        if (is_string($ignoresString)) {
-            $cleanedIgnores = str_replace(' ', '', $ignoresString);
-            if (strlen($cleanedIgnores) > 0) {
-                $ignores = explode(',', $cleanedIgnores);
-            }
-        }
+        $ignores = $this->splitCommaSeparatedValue($this->getRequest()->getParam('ignore'));
 
         if (file_exists($path)) {
             $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
@@ -143,5 +135,29 @@ class AnalyzeController extends AbstractActionController
         }
 
         echo "\n";
+    }
+
+
+
+    /**
+     * Splits a value flag string into an array with real entries.
+     *
+     * @param string|null $value
+     * @return array
+     */
+    private function splitCommaSeparatedValue($value)
+    {
+        if (is_null($value)) {
+            $entries = array();
+        } else {
+            $valueString = (string) $value;
+            $cleanedString = str_replace(' ', '', $valueString);
+
+            if (strlen($cleanedString) > 0) {
+                $entries = explode(',', $cleanedString);
+            }
+        }
+
+        return $entries;
     }
 }
