@@ -46,12 +46,10 @@ class AnalyzeController extends AbstractActionController
 
     private function storeResults()
     {
-        $definitionIndex = $this->analyzer->getDefinitionIndex();
-        $definitions = $definitionIndex->getDefinitions();
-
-        $usageIndex = $this->analyzer->getUsageIndex();
-        $usages = $usageIndex->getUsages();
-        $notices = $usageIndex->getNotices();
+        $index = $this->analyzer->getIndex();
+        $definitions = $index->getDefinitions();
+        $usages = $index->getUsages();
+        $notices = $index->getNotices();
 
         $results = array(
             'definitions' => $definitions,
@@ -120,10 +118,10 @@ class AnalyzeController extends AbstractActionController
         foreach ($notices as $notice) {
 
             switch ($notice['type']) {
-                case \Application\Model\CodeAnalyzer\UsageIndex::NOTICE_NEW_WITH_VARIABLE:
+                case \Application\Model\CodeAnalyzer\Index::NOTICE_NEW_WITH_VARIABLE:
                     $string = "New with variable (new " . $notice['variable'] . ")";
                     break;
-                case \Application\Model\CodeAnalyzer\UsageIndex::NOTICE_UNKNOWN_NEW:
+                case \Application\Model\CodeAnalyzer\Index::NOTICE_UNKNOWN_NEW:
                     $string = "New with unknown structure (" . $notice['nodeType'] . ")";
                     break;
             }

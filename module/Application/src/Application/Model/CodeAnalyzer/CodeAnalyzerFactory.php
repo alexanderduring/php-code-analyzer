@@ -4,8 +4,7 @@ namespace Application\Model\CodeAnalyzer;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Application\Model\CodeAnalyzer\DefinitionIndex;
-use Application\Model\CodeAnalyzer\UsageIndex;
+use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
 use PhpParser\Parser;
@@ -24,20 +23,16 @@ class CodeAnalyzerFactory implements FactoryInterface
         // Create CodeAnalyzer
         $codeAnalyzer = new CodeAnalyzer();
 
-        // Inject DefinitionIndex
-        $definitionIndex = new DefinitionIndex();
-        $codeAnalyzer->injectDefinitionIndex($definitionIndex);
-
-        // Inject UsageIndex
-        $usageIndex = new UsageIndex();
-        $codeAnalyzer->injectUsageIndex($usageIndex);
+        // Inject Index
+        $index = new Index();
+        $codeAnalyzer->injectIndex($index);
 
         // Inject Parser
         $parser = new Parser(new Lexer());
         $codeAnalyzer->injectParser($parser);
 
         // Inject Traverser
-        $traverser = $this->buildTraverser($definitionIndex, $usageIndex);
+        $traverser = $this->buildTraverser($index);
         $codeAnalyzer->injectTraverser($traverser);
 
         return $codeAnalyzer;
@@ -46,11 +41,10 @@ class CodeAnalyzerFactory implements FactoryInterface
 
 
     /**
-     * @param DefinitionIndex $definitionIndex
-     * @param UsageIndex $usageIndex
+     * @param Index $index
      * @return NodeTraverser
      */
-    private function buildTraverser(DefinitionIndex $definitionIndex, UsageIndex $usageIndex)
+    private function buildTraverser(Index $index)
     {
         $traverser = new NodeTraverser();
 
@@ -60,12 +54,12 @@ class CodeAnalyzerFactory implements FactoryInterface
 
         // Add ClassDefinitionIndexer
         $classDefinitionIndexer = new ClassDefinitionIndexer();
-        $classDefinitionIndexer->injectIndex($definitionIndex);
+        $classDefinitionIndexer->injectIndex($index);
         $traverser->addVisitor($classDefinitionIndexer);
 
         // Add ClassUsageIndexer
         $classUsageIndexer = new ClassUsageIndexer();
-        $classUsageIndexer->injectIndex($usageIndex);
+        $classUsageIndexer->injectIndex($index);
         $traverser->addVisitor($classUsageIndexer);
 
         return $traverser;

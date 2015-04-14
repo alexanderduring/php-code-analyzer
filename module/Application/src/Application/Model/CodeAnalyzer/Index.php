@@ -3,10 +3,20 @@
 namespace Application\Model\CodeAnalyzer;
 
 /**
- * This class holds all usages of
- * classes found in the code.
+ * This class holds all results of the code analyzing
+ *
+ * 1) Definitions of
+ * - classes
+ * - abstract classes
+ * - interfaces
+ * found in the code.
+ *
+ * 2) Usages classes like
+ * - new
+ * found in the code.
+ *
  */
-class UsageIndex
+class Index
 {
     const NOTICE_NEW_WITH_VARIABLE = 'NEW_WITH_VARIABLE';
     const NOTICE_UNKNOWN_NEW = 'UNKNOWN_NEW';
@@ -28,6 +38,51 @@ class UsageIndex
     public function setFilename($filename)
     {
         $this->filename = $filename;
+    }
+
+
+
+    /**
+     * @param string $fullyQualifiedName
+     * @param string $type (class|abstract-class|interface)
+     */
+    public function addClass($fullyQualifiedName, $type)
+    {
+        $this->index['definitions'][$fullyQualifiedName] = array(
+            'fqn' => $fullyQualifiedName,
+            'type' => $type,
+            'file' => $this->filename
+        );
+    }
+
+
+
+    /**
+     * @param string $fullyQualifiedName
+     * @return boolean
+     */
+    public function hasClass($fullyQualifiedName)
+    {
+        $hasClass = array_key_exists($fullyQualifiedName, $this->index['definitions']);
+
+        return $hasClass;
+    }
+
+
+
+    /**
+     * @param string $fullyQualifiedName
+     * @return array
+     */
+    public function getClass($fullyQualifiedName)
+    {
+        if ($this->hasClass($fullyQualifiedName)) {
+            $class = $this->index['definitions'][$fullyQualifiedName];
+        } else {
+            $class = array();
+        }
+
+        return $class;
     }
 
 
@@ -77,6 +132,16 @@ class UsageIndex
             'file' => $this->filename,
             'line' => $line
         );
+    }
+
+
+
+    /**
+     * @return array
+     */
+    public function getDefinitions()
+    {
+        return $this->index['definitions'];
     }
 
 

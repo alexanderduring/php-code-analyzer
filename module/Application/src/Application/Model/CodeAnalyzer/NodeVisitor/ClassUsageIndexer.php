@@ -2,7 +2,7 @@
 
 namespace Application\Model\CodeAnalyzer\NodeVisitor;
 
-use Application\Model\CodeAnalyzer\UsageIndex;
+use Application\Model\CodeAnalyzer\Index;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
 
@@ -12,7 +12,7 @@ use PhpParser\Node;
  */
 class ClassUsageIndexer extends NodeVisitorAbstract
 {
-    /** @var Application\Model\CodeAnalyzer\UsageIndex */
+    /** @var Application\Model\CodeAnalyzer\Index */
     private $index;
 
     private $context = array('global');
@@ -20,9 +20,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
 
     /**
-     * @param Application\Model\CodeAnalyzer\UsageIndex $index
+     * @param Application\Model\CodeAnalyzer\Index $index
      */
-    public function injectIndex(UsageIndex $index)
+    public function injectIndex(Index $index)
     {
         $this->index = $index;
     }

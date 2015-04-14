@@ -22,11 +22,8 @@ use SplFileInfo;
  */
 class CodeAnalyzer
 {
-    /** @var \Application\Model\CodeAnalyzer\DefinitionIndex */
-    private $definitionIndex;
-
-    /** @var \Application\Model\CodeAnalyzer\UsageIndex */
-    private $usageIndex;
+    /** @var \Application\Model\CodeAnalyzer\Index */
+    private $index;
 
     /** @var \PhpParser\Parser */
     private $parser;
@@ -57,41 +54,21 @@ class CodeAnalyzer
 
 
     /**
-     * @param \Application\Model\CodeAnalyzer\DefinitionIndex $index
+     * @param \Application\Model\CodeAnalyzer\Index $index
      */
-    public function injectDefinitionIndex(DefinitionIndex $index)
+    public function injectIndex(Index $index)
     {
-        $this->definitionIndex = $index;
+        $this->index = $index;
     }
 
 
 
     /**
-     * @param \Application\Model\CodeAnalyzer\UsageIndex $index
+     * @return \Application\Model\CodeAnalyzer\Index
      */
-    public function injectUsageIndex(UsageIndex $index)
+    public function getIndex()
     {
-        $this->usageIndex = $index;
-    }
-
-
-
-    /**
-     * @return \Application\Model\CodeAnalyzer\DefinitionIndex
-     */
-    public function getDefinitionIndex()
-    {
-        return $this->definitionIndex;
-    }
-
-
-
-    /**
-     * @return \Application\Model\CodeAnalyzer\UsageIndex
-     */
-    public function getUsageIndex()
-    {
-        return $this->usageIndex;
+        return $this->index;
     }
 
 
@@ -162,8 +139,7 @@ class CodeAnalyzer
      */
     private function analyze($filename, $code)
     {
-        $this->definitionIndex->setFilename($filename);
-        $this->usageIndex->setFilename($filename);
+        $this->index->setFilename($filename);
 
         try {
             $nodes = $this->parser->parse($code);
