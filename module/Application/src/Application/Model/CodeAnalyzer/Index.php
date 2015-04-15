@@ -45,13 +45,17 @@ class Index
     /**
      * @param string $fullyQualifiedName
      * @param string $type (class|abstract-class|interface)
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    public function addClass($fullyQualifiedName, $type)
+    public function addClass($fullyQualifiedName, $type, $startLine, $endLine)
     {
         $this->index['definitions'][$fullyQualifiedName] = array(
             'fqn' => $fullyQualifiedName,
             'type' => $type,
-            'file' => $this->filename
+            'file' => $this->filename,
+            'startLine' => $startLine,
+            'endLine' => $endLine
         );
     }
 

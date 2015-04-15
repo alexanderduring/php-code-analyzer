@@ -101,6 +101,8 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     private function addEntryToIndex(Node $node, $type)
     {
         $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
-        $this->index->addClass($fullyQualifiedClassName, $type);
+        $startLine = $node->getAttribute('startLine');
+        $endLine = $node->getAttribute('endLine');
+        $this->index->addClass($fullyQualifiedClassName, $type, $startLine, $endLine);
     }
 }

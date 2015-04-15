@@ -79,9 +79,13 @@ class AnalyzeController extends AbstractActionController
         echo "\nFound classes:\n--------------\n";
 
         foreach ($definitions as $definition) {
-            $string = $definition['type'] . " ";
-            $string .= $definition['fqn'] . ", ";
-            $string .= $definition['file'] . "\n";
+            $type = $definition['type'];
+            $fqn = $definition['fqn'];
+            $file = $definition['file'];
+            $start = $definition['startLine'];
+            $end = $definition['endLine'];
+
+            $string = "$type $fqn, $file (line: $start-$end)\n";
             echo $string;
         }
 
