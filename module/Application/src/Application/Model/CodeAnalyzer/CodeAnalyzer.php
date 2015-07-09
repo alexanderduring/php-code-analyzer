@@ -90,7 +90,7 @@ class CodeAnalyzer
 
 
     /**
-     * @param type $path
+     * @param string $path
      */
     private function processFile($path)
     {
