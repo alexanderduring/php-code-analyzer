@@ -108,34 +108,34 @@ class Index
 
     /**
      * @param string $variableName
+     * @param array $context
      * @param integer $line
      */
     public function addInstantiationWithVariable($variableName, $context, $line)
     {
-        $this->index['notices'][] = array(
+        $notice = array(
             'type' => self::NOTICE_NEW_WITH_VARIABLE,
-            'variable' => $variableName,
-            'context' => $context,
-            'file' => $this->filename,
-            'line' => $line
+            'variable' => $variableName
         );
+
+        $this->addNotice($notice, $context, $line);
     }
 
 
 
     /**
      * @param string $nodeType
+     * @param array $context
      * @param integer $line
      */
     public function addUnknownInstantiation($nodeType, $context, $line)
     {
-        $this->index['notices'][] = array(
+        $notice = array(
             'type' => self::NOTICE_UNKNOWN_NEW,
-            'nodeType' => $nodeType,
-            'context' => $context,
-            'file' => $this->filename,
-            'line' => $line
+            'nodeType' => $nodeType
         );
+
+        $this->addNotice($notice, $context, $line);
     }
 
 
@@ -166,5 +166,21 @@ class Index
     public function getNotices()
     {
         return $this->index['notices'];
+    }
+
+
+
+    /**
+     * @param array $notice
+     * @param array $context
+     * @param integer $line
+     */
+    private function addNotice($notice, $context, $line)
+    {
+        $notice['context'] = $context;
+        $notice['file'] = $this->filename;
+        $notice['line'] = $line;
+
+        $this->index['notices'][] = $notice;
     }
 }
