@@ -128,6 +128,8 @@ class AnalyzeController extends AbstractActionController
                 case \Application\Model\CodeAnalyzer\Index::NOTICE_UNKNOWN_NEW:
                     $string = "New with unknown structure (" . $notice['nodeType'] . ")";
                     break;
+                default:
+                    $string = "Unknown notice";
             }
 
             $string .= " in " . $notice['context'];
