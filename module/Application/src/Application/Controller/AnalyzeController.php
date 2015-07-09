@@ -159,6 +159,8 @@ class AnalyzeController extends AbstractActionController
 
             if (strlen($cleanedString) > 0) {
                 $entries = explode(',', $cleanedString);
+            } else {
+                $entries = array();
             }
         }
 
