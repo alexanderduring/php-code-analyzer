@@ -5,6 +5,7 @@ namespace Application\Model\CodeAnalyzer\NodeVisitor;
 use Application\Model\CodeAnalyzer\Index;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_ as StmtClassNode;
 
 /**
  * This visitor looks for class definitions
@@ -42,18 +43,7 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     public function enterNode(Node $node)
     {
         if ($node->getType() == 'Stmt_Class') {
-            if ($node->isAbstract()) {
-                $this->addAbstractClassToIndex($node);
-            }
-            elseif ($node->isFinal()) {
-                $this->addFinalClassToIndex($node);
-            }
-            elseif (!$node->isAbstract() && !$node->isAbstract()) {
-                $this->addClassToIndex($node);
-            }
-            else {
-                throw new Exception('Found abstract final class');
-            }
+            $this->enterNodeStmtClass($node);
         }
 
         if ($node->getType() == 'Stmt_Interface') {
@@ -78,6 +68,27 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     public function afterTraverse(array $nodes)
     {
 
+    }
+
+
+
+    /**
+     * @param StmtClassNode $stmtClassNode
+     */
+    private function enterNodeStmtClass(StmtClassNode $stmtClassNode)
+    {
+        if ($stmtClassNode->isAbstract()) {
+            $this->addAbstractClassToIndex($stmtClassNode);
+        }
+        elseif ($stmtClassNode->isFinal()) {
+            $this->addFinalClassToIndex($stmtClassNode);
+        }
+        elseif (!$stmtClassNode->isAbstract() && !$stmtClassNode->isAbstract()) {
+            $this->addClassToIndex($stmtClassNode);
+        }
+        else {
+            throw new Exception('Found abstract final class');
+        }
     }
 
 
