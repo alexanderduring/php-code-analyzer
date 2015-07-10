@@ -42,13 +42,23 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     public function enterNode(Node $node)
     {
         if ($node->getType() == 'Stmt_Class') {
-            $this->addClassToIndex($node);
+            if ($node->isAbstract()) {
+                $this->addAbstractClassToIndex($node);
+            }
+            elseif ($node->isFinal()) {
+                $this->addFinalClassToIndex($node);
+            }
+            elseif (!$node->isAbstract() && !$node->isAbstract()) {
+                $this->addClassToIndex($node);
+            }
+            else {
+                throw new Exception('Found abstract final class');
+            }
         }
 
         if ($node->getType() == 'Stmt_Interface') {
             $this->addInterfaceToIndex($node);
         }
-
     }
 
 
@@ -79,6 +89,28 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     private function addClassToIndex(Node $classStatement)
     {
         $this->addEntryToIndex($classStatement, 'class');
+    }
+
+
+
+    /**
+     * Adds an abstract class to the index.
+     * @param Node $classStatement
+     */
+    private function addAbstractClassToIndex(Node $classStatement)
+    {
+        $this->addEntryToIndex($classStatement, 'abstract class');
+    }
+
+
+
+    /**
+     * Adds a final class to the index.
+     * @param Node $classStatement
+     */
+    private function addFinalClassToIndex(Node $classStatement)
+    {
+        $this->addEntryToIndex($classStatement, 'final class');
     }
 
 
