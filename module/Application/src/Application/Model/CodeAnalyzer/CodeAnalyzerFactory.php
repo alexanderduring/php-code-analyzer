@@ -7,7 +7,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
-use PhpParser\Parser;
+use PhpParser\ParserFactory;
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
@@ -28,7 +28,8 @@ class CodeAnalyzerFactory implements FactoryInterface
         $codeAnalyzer->injectIndex($index);
 
         // Inject Parser
-        $parser = new Parser(new Lexer());
+        $parserFactory = new ParserFactory();
+        $parser = $parserFactory->create(ParserFactory::PREFER_PHP5);
         $codeAnalyzer->injectParser($parser);
 
         // Inject Traverser
