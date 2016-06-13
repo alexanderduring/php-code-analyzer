@@ -1,0 +1,21 @@
+{
+  "name": "php-code-analyzer",
+  "homepage": "https://github.com/alexanderduring/php-code-analyzer",
+  "authors": [
+    "Alexander During"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "GNU LESSER GENERAL PUBLIC LICENSE",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "js-treemap": "^0.1.2"
+  }
+}
