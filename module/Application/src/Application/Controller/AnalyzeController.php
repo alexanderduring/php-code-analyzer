@@ -2,22 +2,29 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+ use Application\Model\CodeAnalyzer\CodeAnalyzer;
+ use Zend\Mvc\Controller\AbstractActionController;
 
-class AnalyzeController extends AbstractActionController
-{
-    /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
-    private $analyzer;
+ class AnalyzeController extends AbstractActionController
+ {
+     /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
+     private $analyzer;
 
 
 
-    public function runAction()
+     public function injectCodeAnalyzer(CodeAnalyzer $codeAnalyzer)
+     {
+         $this->analyzer = $codeAnalyzer;
+     }
+
+
+
+     public function runAction()
     {
         $path = $this->getRequest()->getParam('path');
         $ignores = $this->splitCommaSeparatedValue($this->getRequest()->getParam('ignore'));
 
         if (file_exists($path)) {
-            $this->analyzer = $this->getServiceLocator()->get('CodeAnalyzer');
             $this->analyzer->process($path, $ignores);
 
             $this->storeResults();
