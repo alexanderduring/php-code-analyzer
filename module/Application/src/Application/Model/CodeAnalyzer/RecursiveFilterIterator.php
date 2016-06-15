@@ -3,6 +3,7 @@
 namespace Application\Model\CodeAnalyzer;
 
 use RecursiveFilterIterator as SplRecursiveFilterIterator;
+use RecursiveIterator;
 
 class RecursiveFilterIterator extends SplRecursiveFilterIterator
 {
@@ -38,8 +39,14 @@ class RecursiveFilterIterator extends SplRecursiveFilterIterator
 
     public function getChildren()
     {
-        $children = new self($this->getInnerIterator()->getChildren());
-        $children->setIgnores($this->ignores);
+        $innerIterator = $this->getInnerIterator();
+
+        if ($innerIterator instanceof RecursiveIterator) {
+            $children = new self($innerIterator->getChildren());
+            $children->setIgnores($this->ignores);
+        } else {
+            $children = null;
+        }
 
         return $children;
     }
