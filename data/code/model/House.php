@@ -11,6 +11,13 @@ class House
 
 
 
+    public function openDoor()
+    {
+        echo "Open door.";
+    }
+
+
+
     public function instantiateTheThird(array $classes)
     {
         $instance = new $classes['third'];
