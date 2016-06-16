@@ -1,5 +1,7 @@
 <?php
 
+namespace Example\House;
+
 abstract class AbstractHouse
 {
     public function openDoor()

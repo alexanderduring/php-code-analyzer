@@ -1,5 +1,7 @@
 <?php
 
+namespace Example;
+
 interface Barable
 {
     public function bar();

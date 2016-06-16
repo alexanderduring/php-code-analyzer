@@ -1,5 +1,7 @@
 <?php
 
+namespace Example\House;
+
 class House
 {
     public function __construct()
