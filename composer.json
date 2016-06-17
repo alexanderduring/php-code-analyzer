@@ -7,7 +7,7 @@
     "homepage": "https://github.com/alexanderduring/php-code-analyzer",
     "require": {
         "php": ">=5.3.23",
-        "zendframework/zendframework": "2.5.3",
+        "zendframework/zendframework": "2.4.10",
         "nikic/php-parser": "2.1.0"
     }
 }
