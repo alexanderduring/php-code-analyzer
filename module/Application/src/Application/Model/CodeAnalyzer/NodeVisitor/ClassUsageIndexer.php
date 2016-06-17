@@ -12,7 +12,7 @@ use PhpParser\Node;
  */
 class ClassUsageIndexer extends NodeVisitorAbstract
 {
-    /** @var Application\Model\CodeAnalyzer\Index */
+    /** @var \Application\Model\CodeAnalyzer\Index */
     private $index;
 
     private $context = array('global');
@@ -20,7 +20,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
 
     /**
-     * @param Application\Model\CodeAnalyzer\Index $index
+     * @param \Application\Model\CodeAnalyzer\Index $index
      */
     public function injectIndex(Index $index)
     {
