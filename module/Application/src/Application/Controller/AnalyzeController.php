@@ -2,24 +2,24 @@
 
 namespace Application\Controller;
 
- use Application\Model\CodeAnalyzer\CodeAnalyzer;
- use Zend\Mvc\Controller\AbstractActionController;
+use Application\Model\CodeAnalyzer\CodeAnalyzer;
+use Zend\Mvc\Controller\AbstractActionController;
 
- class AnalyzeController extends AbstractActionController
- {
-     /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
-     private $analyzer;
-
-
-
-     public function injectCodeAnalyzer(CodeAnalyzer $codeAnalyzer)
-     {
-         $this->analyzer = $codeAnalyzer;
-     }
+class AnalyzeController extends AbstractActionController
+{
+    /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
+    private $analyzer;
 
 
 
-     public function runAction()
+    public function injectCodeAnalyzer(CodeAnalyzer $codeAnalyzer)
+    {
+        $this->analyzer = $codeAnalyzer;
+    }
+
+
+
+    public function runAction()
     {
         $path = $this->getRequest()->getParam('path');
         $ignores = $this->splitCommaSeparatedValue($this->getRequest()->getParam('ignore'));
