@@ -1,0 +1,6 @@
+{
+  "name": "Php Code Analyzer",
+  "tagline": "Static code analyzer for php written in php.",
+  "body": "[![Build Status](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/badges/build.png?b=master)](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/?branch=master)\r\n\r\nTo execute type this in your console in the project root directory:\r\n\r\n    $ php public/index.php run path/to/php-files\r\n\r\nAs an example, you can use the code in data/code:\r\n\r\n    $ php public/index.php run data/code \r\n\r\nTo ignore folders or files you can specify a comma separated list of strings that will be matched into the complete filepath. If one of the strings matches, the file/folder will be ignored.\r\nIn this example all files in the folder \"model\" will be ignored:\r\n\r\n    $ php public/index.php run --ignore=\"model/\" data/code\r\n\r\nTo get a report of the found results type:\r\n\r\n    $ php public/index.php report\r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
