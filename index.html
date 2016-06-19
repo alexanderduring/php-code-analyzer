@@ -21,10 +21,18 @@
     <section class="main-content">
       <p><a href="https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/build-status/master"><img src="https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/badges/build.png?b=master" alt="Build Status"></a> <a href="https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/?branch=master"><img src="https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a></p>
 
-      <p>To execute type this in your console in the project root directory:</p>
+      <h2>Goal</h2>
+      <p>
+        The goal of the Php Code Analyzer project is to provide a tool for software developers to analyze code dependencies 
+        and to write less dependent code. At the current state this is only a prototype. Only "new" statements are found in the code
+        and reported. Soon more types of dependencies will be supported.
+      </p>
+      
+      <h2>Try it out</h2>
+      <p>To execute the code analyzer type the following command in your console in the project root directory:</p>
       <pre><code>$ php public/index.php run path/to/php-files</code></pre>
 
-      <p>As an example, you can use the code in data/code:</p>
+      <p>As an example, you can use the provided example code in data/code:</p>
       <pre><code>$ php public/index.php run data/code</code></pre>
 
       <p>
