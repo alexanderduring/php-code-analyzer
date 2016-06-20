@@ -21,6 +21,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
     /**
      * @param \Application\Model\CodeAnalyzer\Index $index
+     * @return void
      */
     public function injectIndex(Index $index)
     {
@@ -31,6 +32,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
     /**
      * @param array $nodes
+     * @return void
      */
     public function beforeTraverse(array $nodes)
     {
@@ -40,6 +42,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
     /**
      * @param Node $node
+     * @return void
      */
     public function enterNode(Node $node)
     {
@@ -62,9 +65,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     }
 
 
-
     /**
      * @param Node $node
+     * @return void
      */
     public function leaveNode(Node $node)
     {
@@ -77,6 +80,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
     /**
      * @param array $nodes
+     * @return void
      */
     public function afterTraverse(array $nodes)
     {
@@ -87,6 +91,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
     /**
      * @param Node $newNode
+     * @return void
      */
     private function analyzeInstantiation(Node $newNode)
     {
