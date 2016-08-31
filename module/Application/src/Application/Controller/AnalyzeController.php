@@ -28,9 +28,11 @@ class AnalyzeController extends AbstractActionController
             $this->analyzer->process($path, $ignores);
 
             $this->storeResults();
-            echo "Analyzing finished.\n";
+
+            $usedMemory = round(memory_get_usage() / (1024*1024), 2);
+            echo "Analyzing finished. Used memory: " . $usedMemory . " MBytes.\n\n";
         } else {
-            echo "The file/folder " . $path . " does not exist.\n";
+            echo "The file/folder " . $path . " does not exist.\n\n";
         }
 
         return;
