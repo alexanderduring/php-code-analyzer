@@ -1,6 +1,7 @@
 [![Build Status](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/badges/build.png?b=master)](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alexanderduring/php-code-analyzer/?branch=master)
 
-# php-code-analyzer
+# PHP Code Analyzer
+
 Static code analyzer for php written in php.
 
 To execute type this in your console in the project root directory:
