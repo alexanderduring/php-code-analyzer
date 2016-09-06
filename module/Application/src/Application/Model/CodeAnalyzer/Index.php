@@ -93,6 +93,7 @@ class Index
 
     /**
      * @param string $fullyQualifiedName
+     * @param string $context
      * @param integer $line
      */
     public function addInstantiation($fullyQualifiedName, $context, $line)
@@ -108,7 +109,7 @@ class Index
 
     /**
      * @param string $variableName
-     * @param array $context
+     * @param string $context
      * @param integer $line
      */
     public function addInstantiationWithVariable($variableName, $context, $line)
@@ -125,7 +126,7 @@ class Index
 
     /**
      * @param string $nodeType
-     * @param array $context
+     * @param string $context
      * @param integer $line
      */
     public function addUnknownInstantiation($nodeType, $context, $line)
