@@ -3,6 +3,7 @@
 namespace Application\Controller;
 
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
+use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
 
 class AnalyzeController extends AbstractActionController
@@ -55,10 +56,18 @@ class AnalyzeController extends AbstractActionController
 
     private function storeResults()
     {
+        // Setup Ember Db
+        $documentManager = new DocumentManager();
+        $documentManager->setDatabasePath('data/results');
+
         $index = $this->analyzer->getIndex();
         $definitions = $index->getDefinitions();
         $usages = $index->getUsages();
         $notices = $index->getNotices();
+
+        // Insert class definitions
+        $documentManager->remove('classes');
+        $documentManager->insertMany('classes', $definitions);
 
         $results = array(
             'definitions' => $definitions,
