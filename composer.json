@@ -8,6 +8,7 @@
     "require": {
         "php": ">=5.3.23",
         "zendframework/zendframework": "2.4.10",
-        "nikic/php-parser": "2.1.0"
+        "nikic/php-parser": "2.1.0",
+        "alexanderduring/ember-db": "dev-master"
     }
 }
