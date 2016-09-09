@@ -23,6 +23,8 @@ class Index
 
     /** @var array */
     private $index = array(
+        'definitions' => array(),
+        'namespaces' => array(),
         'usages' => array(),
         'notices' => array()
     );
@@ -50,13 +52,29 @@ class Index
      */
     public function addClass($fullyQualifiedName, $type, $startLine, $endLine)
     {
+        $namespaceName = $this->getNamespaceFromFqn($fullyQualifiedName);
+
+        // Add class definition to index
         $this->index['definitions'][$fullyQualifiedName] = array(
             'fqn' => $fullyQualifiedName,
+            'namespace' => $namespaceName,
             'type' => $type,
             'file' => $this->filename,
             'startLine' => $startLine,
             'endLine' => $endLine
         );
+
+        // Add/update namespace information
+        if (!array_key_exists($namespaceName, $this->index['namespaces'])) {
+            $this->index['namespaces'][$namespaceName] = array(
+                'directDescendents' => 0,
+                'allDescendents' => null,
+                'subNamespaces' => array()
+            );
+        }
+        $this->index['namespaces'][$namespaceName]['directDescendents'] += 1;
+        $this->index['namespaces'][$namespaceName]['directDescendents'] += 1;
+        $namespaces = $this->index['namespaces'];
     }
 
 
@@ -183,5 +201,25 @@ class Index
         $notice['line'] = $line;
 
         $this->index['notices'][] = $notice;
+    }
+
+
+
+    /**
+     * @param string $fullyQualifiedName
+     * @return string
+     */
+    private function getNamespaceFromFqn($fullyQualifiedName)
+    {
+        $fullyQualifiedName = ltrim($fullyQualifiedName, '\\');
+        $positionLastBackslash = strrpos($fullyQualifiedName, '\\');
+
+        if ($positionLastBackslash !== false) {
+            $namespace = '\\';
+        } else {
+            $namespace = substr($fullyQualifiedName, 0, $positionLastBackslash+1);
+        }
+
+        return $namespace;
     }
 }
