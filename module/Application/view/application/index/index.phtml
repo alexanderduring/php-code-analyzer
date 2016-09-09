@@ -1,1 +1,15 @@
-Hallo Welt!
+<html>
+<body>
+    <?php foreach ($this->classes as $class) { ?>
+        <p>
+            <?php echo $class->get('fqn') ?><br/>
+            Usages with new:
+            <ul>
+            <?php foreach ($class->get('usages.new') as $usageWithNew) { ?>
+                <li><?php echo $usageWithNew['context'] ?></li>
+            <?php } ?>
+            </ul>
+        </p>
+    <?php } ?>
+</body>
+</html>

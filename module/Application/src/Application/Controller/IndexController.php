@@ -2,13 +2,21 @@
 
 namespace Application\Controller;
 
+use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
-        return new ViewModel();
+        // Setup Ember Db
+        $documentManager = new DocumentManager();
+        $documentManager->setDatabasePath('data/results');
+
+        $classes = $documentManager->find('classes');
+
+        return array(
+            'classes' => $classes
+        );
     }
 }

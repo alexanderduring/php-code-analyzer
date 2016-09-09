@@ -67,7 +67,13 @@ class AnalyzeController extends AbstractActionController
 
         // Insert class definitions
         $documentManager->remove('classes');
-        $documentManager->insertMany('classes', $definitions);
+
+        foreach ($definitions as $definition) {
+            if (array_key_exists($definition['fqn'], $usages)) {
+                $definition['usages'] = $usages[$definition['fqn']];
+            }
+            $documentManager->insert('classes', $definition);
+        }
 
         $results = array(
             'definitions' => $definitions,
