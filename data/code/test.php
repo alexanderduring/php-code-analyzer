@@ -57,28 +57,25 @@ class Main
         $var = new Foo();
         $var->bar();
 
-        // Instantiation in an assignment
-        $var2 = new Baz\Foo();
-
         // Instantiation in an array
         $list = array(
             'instance' => new Foo()
         );
 
         // Instantiation in a function call
-        $var3 = new Thing(new AnotherThing());
+        $var2 = new Thing(new AnotherThing());
 
         // Instantiation with class name variable
         $className = 'AnotherThing';
-        $var4 = new $className();
+        $var3 = new $className();
 
         // Instantiation with static class variable
-        $var5 = new AnotherThing::$name();
+        $var4 = new AnotherThing::$name();
 
         // Instantiation with object property
-        $var6 = new $var3->name();
+        $var5 = new $var2->name();
     }
 }
 
-$var7 = new Main();
-$var8 = new Thing(new AnotherThing());
+$var6 = new Main();
+$var7 = new Thing(new AnotherThing());
