@@ -143,9 +143,14 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
      */
     private function addEntryToIndex(Node $node, $type)
     {
-        $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
-        $startLine = $node->getAttribute('startLine');
-        $endLine = $node->getAttribute('endLine');
-        $this->index->addClass($fullyQualifiedClassName, $type, $startLine, $endLine);
+        if (property_exists($node, 'namespacedName')) {
+            $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
+            $startLine = $node->getAttribute('startLine');
+            $endLine = $node->getAttribute('endLine');
+            $this->index->addClass($fullyQualifiedClassName, $type, $startLine, $endLine);
+        } else {
+            print_r($node);
+            exit("Found class definition without name.");
+        }
     }
 }
