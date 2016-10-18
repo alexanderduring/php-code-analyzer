@@ -3,12 +3,15 @@
     <?php foreach ($this->classes as $class) { ?>
         <p>
             <?php echo $class->get('fqn') ?><br/>
-            Usages with new:
-            <ul>
-            <?php foreach ($class->get('usages.new') as $usageWithNew) { ?>
-                <li><?php echo $usageWithNew['context'] ?></li>
+            <?php $usagesWithNew = $class->get('usages.new') ?>
+            <?php if (is_array($usagesWithNew) && !empty($usagesWithNew)) { ?>
+                Usages with new:
+                <ul>
+                <?php foreach ($usagesWithNew as $usageWithNew) { ?>
+                    <li><?php echo $usageWithNew['context'] ?></li>
+                <?php } ?>
+                </ul>
             <?php } ?>
-            </ul>
         </p>
     <?php } ?>
 </body>
