@@ -21,3 +21,4 @@ To get a report of the found results type:
 
     $ php public/index.php report
 
+If you call the IndexController via the browser you get a very debug-like dump of found usages of instantiations.
