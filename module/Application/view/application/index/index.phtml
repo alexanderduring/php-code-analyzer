@@ -2,7 +2,7 @@
 <body>
     <?php foreach ($this->classes as $class) { ?>
         <p>
-            <?php echo $class->get('fqn') ?><br/>
+            <h4><?php echo $class->get('fqn') ?></h4>
             <?php $usagesWithNew = $class->get('usages.new') ?>
             <?php if (is_array($usagesWithNew) && !empty($usagesWithNew)) { ?>
                 Usages with new:
