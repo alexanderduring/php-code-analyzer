@@ -13,13 +13,13 @@ use PhpParser\Node\Stmt\Class_ as StmtClassNode;
  */
 class ClassDefinitionIndexer extends NodeVisitorAbstract
 {
-    /** @var Application\Model\CodeAnalyzer\Index */
+    /** @var \Application\Model\CodeAnalyzer\Index */
     private $index;
 
 
 
     /**
-     * @param Application\Model\CodeAnalyzer\Index $index
+     * @param \Application\Model\CodeAnalyzer\Index $index
      */
     public function injectIndex(Index $index)
     {
@@ -38,7 +38,7 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
 
 
     /**
-     * @param Node $node
+     * @param \PhpParser\Node $node
      */
     public function enterNode(Node $node)
     {
@@ -54,7 +54,7 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
 
 
     /**
-     * @param Node $node
+     * @param \PhpParser\Node $node
      */
     public function leaveNode(Node $node)
     {
