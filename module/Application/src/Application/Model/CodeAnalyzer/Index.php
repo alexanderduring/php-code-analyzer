@@ -18,8 +18,12 @@ namespace Application\Model\CodeAnalyzer;
  */
 class Index
 {
+    const USAGE_NEW = 'new';
+    const USAGE_USE = 'use';
+
     const NOTICE_NEW_WITH_VARIABLE = 'NEW_WITH_VARIABLE';
     const NOTICE_UNKNOWN_NEW = 'UNKNOWN_NEW';
+    const NOTICE_UNKNOWN_USE = 'UNKNOWN_USE';
 
     /** @var array */
     private $index = array(
@@ -116,11 +120,7 @@ class Index
      */
     public function addInstantiation($fullyQualifiedName, $context, $line)
     {
-        $this->index['usages'][$fullyQualifiedName]['new'][] = array(
-            'context' => $context,
-            'file' => $this->filename,
-            'line' => $line
-        );
+        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $this->filename, $line);
     }
 
 
@@ -160,6 +160,35 @@ class Index
 
 
     /**
+     * @param string $fullyQualifiedName
+     * @param string $context
+     * @param integer $line
+     */
+    public function addUseStatement($fullyQualifiedName, $context, $line)
+    {
+        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $this->filename, $line);
+    }
+
+
+
+    /**
+     * @param string $nodeType
+     * @param string $context
+     * @param integer $line
+     */
+    public function addUnknownUseStatement($nodeType, $context, $line)
+    {
+        $notice = array(
+            'type' => self::NOTICE_UNKNOWN_USE,
+            'nodeType' => $nodeType
+        );
+
+        $this->addNotice($notice, $context, $line);
+    }
+
+
+
+    /**
      * @return array
      */
     public function getDefinitions()
@@ -187,6 +216,23 @@ class Index
         return $this->index['notices'];
     }
 
+
+
+    /**
+     * @param string $typeOfUsage
+     * @param string $fullyQualifiedName
+     * @param string $context
+     * @param string $filename
+     * @param integer $line
+     */
+    private function addUsage($typeOfUsage, $fullyQualifiedName, $context, $filename, $line)
+    {
+        $this->index['usages'][$fullyQualifiedName][$typeOfUsage][] = array(
+            'context' => $context,
+            'file' => $filename,
+            'line' => $line
+        );
+    }
 
 
     /**
