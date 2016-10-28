@@ -41,7 +41,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
 
     /**
-     * @param Node $node
+     * @param \PhpParser\Node $node
      * @return void
      */
     public function enterNode(Node $node)
@@ -62,6 +62,12 @@ class ClassUsageIndexer extends NodeVisitorAbstract
         if ($node->getType() == 'Expr_New') {
             $this->analyzeInstantiation($node);
         }
+
+        // Found "use" statement
+        if ($node->getType() == 'Stmt_Use') {
+            $this->analyzeUseStatement($node);
+        }
+
     }
 
 
@@ -161,6 +167,25 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
             default:
                 $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $line);
+        }
+    }
+
+
+
+    private function analyzeUseStatement(Node $node)
+    {
+
+        foreach ($node->uses as $use) {
+            $startLine = $use->getAttribute('startLine');
+            $endLine = $use->getAttribute('endLine');
+
+            if ($use instanceof Node\Stmt\UseUse) {
+                $nameNode = $use->name;
+                $className = implode('\\', $nameNode->parts);
+                $this->index->addUseStatement($className, $this->getContext(), $startLine);
+            } else {
+                $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $startLine);
+            }
         }
     }
 
