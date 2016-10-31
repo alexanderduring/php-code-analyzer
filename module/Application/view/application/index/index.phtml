@@ -12,6 +12,15 @@
                 <?php } ?>
                 </ul>
             <?php } ?>
+            <?php $usagesWithUse = $class->get('usages.use') ?>
+            <?php if (is_array($usagesWithUse) && !empty($usagesWithUse)) { ?>
+                Usages with use:
+                <ul>
+                <?php foreach ($usagesWithUse as $usageWithUse) { ?>
+                    <li><?php echo $usageWithUse['context'] ?></li>
+                <?php } ?>
+                </ul>
+            <?php } ?>
         </p>
     <?php } ?>
 </body>
