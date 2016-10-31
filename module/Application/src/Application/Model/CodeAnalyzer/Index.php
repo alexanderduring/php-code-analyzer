@@ -116,11 +116,12 @@ class Index
     /**
      * @param string $fullyQualifiedName
      * @param string $context
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    public function addInstantiation($fullyQualifiedName, $context, $line)
+    public function addInstantiation($fullyQualifiedName, $context, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $this->filename, $line);
+        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $this->filename, $startLine);
     }
 
 
@@ -128,16 +129,17 @@ class Index
     /**
      * @param string $variableName
      * @param string $context
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    public function addInstantiationWithVariable($variableName, $context, $line)
+    public function addInstantiationWithVariable($variableName, $context, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_NEW_WITH_VARIABLE,
             'variable' => $variableName
         );
 
-        $this->addNotice($notice, $context, $line);
+        $this->addNotice($notice, $context, $startLine);
     }
 
 
@@ -145,16 +147,17 @@ class Index
     /**
      * @param string $nodeType
      * @param string $context
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    public function addUnknownInstantiation($nodeType, $context, $line)
+    public function addUnknownInstantiation($nodeType, $context, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_UNKNOWN_NEW,
             'nodeType' => $nodeType
         );
 
-        $this->addNotice($notice, $context, $line);
+        $this->addNotice($notice, $context, $startLine);
     }
 
 
@@ -162,11 +165,12 @@ class Index
     /**
      * @param string $fullyQualifiedName
      * @param string $context
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    public function addUseStatement($fullyQualifiedName, $context, $line)
+    public function addUseStatement($fullyQualifiedName, $context, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $this->filename, $line);
+        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $this->filename, $startLine);
     }
 
 
@@ -174,16 +178,17 @@ class Index
     /**
      * @param string $nodeType
      * @param string $context
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    public function addUnknownUseStatement($nodeType, $context, $line)
+    public function addUnknownUseStatement($nodeType, $context, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_UNKNOWN_USE,
             'nodeType' => $nodeType
         );
 
-        $this->addNotice($notice, $context, $line);
+        $this->addNotice($notice, $context, $startLine);
     }
 
 

@@ -101,7 +101,8 @@ class ClassUsageIndexer extends NodeVisitorAbstract
      */
     private function analyzeInstantiation(Node $newNode)
     {
-        $line = $newNode->getLine();
+        $startLine = $newNode->getAttribute('startLine');
+        $endLine = $newNode->getAttribute('endLine');
         $classNode = $newNode->class;
 
         switch ($classNode->getType()) {
@@ -109,13 +110,13 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             // "new" statement with fully qualified class name
             case 'Name_FullyQualified':
                 $name = implode('\\', $classNode->parts);
-                $this->index->addInstantiation($name, $this->getContext(), $line);
+                $this->index->addInstantiation($name, $this->getContext(), $startLine, $endLine);
                 break;
 
             // "new" statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addInstantiationWithVariable($variableName, $this->getContext(), $line);
+                $this->index->addInstantiationWithVariable($variableName, $this->getContext(), $startLine, $endLine);
                 break;
 
             // "new" statement with static class variable
@@ -124,7 +125,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $className = implode('\\', $fetchNode->class->parts);
                 $variableName = $fetchNode->name;
                 $fullName = $className . "::$" . $variableName;
-                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $line);
+                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $startLine, $endLine);
                 break;
 
             // "new" statement on array entry
@@ -162,11 +163,11 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $variableName = '$' . $fetchNode->var->name;
                 $dimension = $fetchNode->dim->value;
                 $fullName = $variableName . "['" . $dimension . "']";
-                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $line);
+                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $startLine, $endLine);
                 break;
 
             default:
-                $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $line);
+                $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $startLine, $endLine);
         }
     }
 
@@ -182,9 +183,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             if ($use instanceof Node\Stmt\UseUse) {
                 $nameNode = $use->name;
                 $className = implode('\\', $nameNode->parts);
-                $this->index->addUseStatement($className, $this->getContext(), $startLine);
+                $this->index->addUseStatement($className, $this->getContext(), $startLine, $endLine);
             } else {
-                $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $startLine);
+                $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $startLine, $endLine);
             }
         }
     }
