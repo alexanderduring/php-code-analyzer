@@ -121,7 +121,7 @@ class Index
      */
     public function addInstantiation($fullyQualifiedName, $context, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $this->filename, $startLine);
+        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
     }
 
 
@@ -139,7 +139,7 @@ class Index
             'variable' => $variableName
         );
 
-        $this->addNotice($notice, $context, $startLine);
+        $this->addNotice($notice, $context, $startLine, $endLine);
     }
 
 
@@ -157,7 +157,7 @@ class Index
             'nodeType' => $nodeType
         );
 
-        $this->addNotice($notice, $context, $startLine);
+        $this->addNotice($notice, $context, $startLine, $endLine);
     }
 
 
@@ -170,7 +170,7 @@ class Index
      */
     public function addUseStatement($fullyQualifiedName, $context, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $this->filename, $startLine);
+        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
     }
 
 
@@ -188,7 +188,7 @@ class Index
             'nodeType' => $nodeType
         );
 
-        $this->addNotice($notice, $context, $startLine);
+        $this->addNotice($notice, $context, $startLine, $endLine);
     }
 
 
@@ -228,28 +228,33 @@ class Index
      * @param string $fullyQualifiedName
      * @param string $context
      * @param string $filename
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    private function addUsage($typeOfUsage, $fullyQualifiedName, $context, $filename, $line)
+    private function addUsage($typeOfUsage, $fullyQualifiedName, $context, $filename, $startLine, $endLine)
     {
         $this->index['usages'][$fullyQualifiedName][$typeOfUsage][] = array(
             'context' => $context,
             'file' => $filename,
-            'line' => $line
+            'startLine' => $startLine,
+            'endLine' => $endLine
         );
     }
+
 
 
     /**
      * @param array $notice
      * @param array $context
-     * @param integer $line
+     * @param integer $startLine
+     * @param integer $endLine
      */
-    private function addNotice($notice, $context, $line)
+    private function addNotice($notice, $context, $startLine, $endLine)
     {
         $notice['context'] = $context;
         $notice['file'] = $this->filename;
-        $notice['line'] = $line;
+        $notice['startLine'] = $startLine;
+        $notice['endLine'] = $endLine;
 
         $this->index['notices'][] = $notice;
     }
