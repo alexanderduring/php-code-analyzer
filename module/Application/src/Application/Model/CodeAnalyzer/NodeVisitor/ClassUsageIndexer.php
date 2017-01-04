@@ -68,6 +68,12 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             $this->analyzeUseStatement($node);
         }
 
+        // Found class method
+        if ($node->getType() == 'Stmt_ClassMethod') {
+            //print_r($node);
+            $this->analyzeClassMethod($node);
+        }
+
     }
 
 
@@ -186,6 +192,22 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $this->index->addUseStatement($className, $this->getContext(), $startLine, $endLine);
             } else {
                 $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $startLine, $endLine);
+            }
+        }
+    }
+
+
+
+    private function analyzeClassMethod(Node $node)
+    {
+        $parameters = $node->params;
+        foreach ($parameters as $parameter) {
+            if (!in_array($parameter->type, ['array', 'callable', 'bool', 'float', 'int', 'string', 'self', ''])) {
+
+                $startLine = $parameter->getAttribute('startLine');
+                $endLine = $parameter->getAttribute('endLine');
+
+                $this->index->addTypeDeclaration($parameter->type->toString(), $this->getContext(), $startLine, $endLine);
             }
         }
     }

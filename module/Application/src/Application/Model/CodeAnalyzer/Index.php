@@ -20,10 +20,11 @@ class Index
 {
     const USAGE_NEW = 'new';
     const USAGE_USE = 'use';
+    const USAGE_TYPE_DECLARATION = 'type-declaration';
 
-    const NOTICE_NEW_WITH_VARIABLE = 'NEW_WITH_VARIABLE';
-    const NOTICE_UNKNOWN_NEW = 'UNKNOWN_NEW';
-    const NOTICE_UNKNOWN_USE = 'UNKNOWN_USE';
+    const NOTICE_NEW_WITH_VARIABLE = 'new-with-variable';
+    const NOTICE_UNKNOWN_NEW = 'unknown-new';
+    const NOTICE_UNKNOWN_USE = 'unknown-use';
 
     /** @var array */
     private $index = array(
@@ -189,6 +190,13 @@ class Index
         );
 
         $this->addNotice($notice, $context, $startLine, $endLine);
+    }
+
+
+
+    public function addTypeDeclaration($fullyQualifiedName, $context, $startLine, $endLine)
+    {
+        $this->addUsage(self::USAGE_TYPE_DECLARATION, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
     }
 
 
