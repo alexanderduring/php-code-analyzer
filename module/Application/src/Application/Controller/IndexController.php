@@ -9,6 +9,9 @@ class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
+        $fqnParam = $this->getEvent()->getRouteMatch()->getParam('fqn');
+        $fqn = str_replace('.', '\\', $fqnParam);
+
         // Setup Ember Db
         $documentManager = new DocumentManager();
         $documentManager->setDatabasePath('data/results');
@@ -16,6 +19,7 @@ class IndexController extends AbstractActionController
         $classes = $documentManager->find('classes');
 
         return array(
+            'fqn' => $fqn,
             'classes' => $classes
         );
     }

@@ -33,9 +33,9 @@ return array(
     'router' => array(
         'routes' => array(
             'home' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
-                    'route'    => '/',
+                    'route'    => '/[:fqn]',
                     'defaults' => array(
                         'controller' => 'Application\Controller\Index',
                         'action'     => 'index'
