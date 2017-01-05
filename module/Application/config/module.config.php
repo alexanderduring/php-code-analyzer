@@ -33,7 +33,7 @@ return array(
     'router' => array(
         'routes' => array(
             'home' => array(
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'type' => Zend\Mvc\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/[:fqn]',
                     'defaults' => array(
