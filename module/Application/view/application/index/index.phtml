@@ -1,6 +1,6 @@
 <div class="col-sm-3">
     <?php foreach ($this->classes as $class) { ?>
-        <a href="/<?php echo str_replace('\\', '.', $class->get('fqn')) ?>"><?php echo $class->get('fqn') ?></a><br/>
+        <a href="/<?php echo urlencode($class->get('fqn')) ?>"><?php echo $class->get('fqn') ?></a><br/>
     <?php } ?>
 </div>
 <div class="col-sm-9">

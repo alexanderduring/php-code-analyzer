@@ -10,7 +10,7 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $fqnParam = $this->getEvent()->getRouteMatch()->getParam('fqn');
-        $fqn = str_replace('.', '\\', $fqnParam);
+        $fqn = urldecode($fqnParam);
 
         // Setup Ember Db
         $documentManager = new DocumentManager();
