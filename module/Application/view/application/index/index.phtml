@@ -17,21 +17,21 @@
                     <?php } ?>
                     </ul>
                 <?php } ?>
-                <?php $usagesWithUse = $class->get('usages.use') ?>
-                <?php if (is_array($usagesWithUse) && !empty($usagesWithUse)) { ?>
-                    Usages with use:
-                    <ul>
-                    <?php foreach ($usagesWithUse as $usageWithUse) { ?>
-                        <li><?php echo $usageWithUse['file'] ?></li>
-                    <?php } ?>
-                    </ul>
-                <?php } ?>
                 <?php $usagesInTypeDeclaration = $class->get('usages.type-declaration') ?>
                 <?php if (is_array($usagesInTypeDeclaration) && !empty($usagesInTypeDeclaration)) { ?>
                     Usages in type declaration:
                     <ul>
                     <?php foreach ($usagesInTypeDeclaration as $usageInTypeDeclaration) { ?>
                         <li><?php echo $usageInTypeDeclaration['context'] ?></li>
+                    <?php } ?>
+                    </ul>
+                <?php } ?>
+                <?php $usagesWithUse = $class->get('usages.use') ?>
+                <?php if (is_array($usagesWithUse) && !empty($usagesWithUse)) { ?>
+                    Usages with use in files:
+                    <ul>
+                    <?php foreach ($usagesWithUse as $usageWithUse) { ?>
+                        <li><?php echo $usageWithUse['file'] ?></li>
                     <?php } ?>
                     </ul>
                 <?php } ?>
