@@ -79,7 +79,6 @@ class Index
         }
         $this->index['namespaces'][$namespaceName]['directDescendents'] += 1;
         $this->index['namespaces'][$namespaceName]['directDescendents'] += 1;
-        $namespaces = $this->index['namespaces'];
     }
 
 
