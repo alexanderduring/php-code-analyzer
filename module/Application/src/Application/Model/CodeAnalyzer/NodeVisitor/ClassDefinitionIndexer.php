@@ -145,9 +145,32 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     {
         if (property_exists($node, 'namespacedName')) {
             $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
+
+            // Extended classes
+            $extendsNode = $node->extends;
+            if ($extendsNode instanceof Node\Name\FullyQualified) {
+                $extendedClass = array(
+                    'fqn' => $extendsNode->toString(),
+                    'nameParts' => $extendsNode->parts
+                );
+            } else {
+                $extendedClass = null;
+            }
+
+            // Implemented interfaces
+            $implementsNodes = $node->implements;
+            $implementedInterfaces = array();
+            foreach($implementsNodes as $implementsNode) {
+                $interface = array(
+                    'fqn' => $implementsNode->toString(),
+                    'nameParts' => $implementsNode->parts
+                );
+                $implementedInterfaces[] = $interface;
+            }
+
             $startLine = $node->getAttribute('startLine');
             $endLine = $node->getAttribute('endLine');
-            $this->index->addClass($fullyQualifiedClassName, $type, $startLine, $endLine);
+            $this->index->addClass($fullyQualifiedClassName, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine);
         } else {
             print_r($node);
             exit("Found class definition without name.");

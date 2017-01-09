@@ -52,10 +52,12 @@ class Index
     /**
      * @param string $fullyQualifiedName
      * @param string $type (class|abstract-class|interface)
+     * @param array $extendedClass
+     * @param array $implementedInterfaces
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addClass($fullyQualifiedName, $type, $startLine, $endLine)
+    public function addClass($fullyQualifiedName, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine)
     {
         $namespaceName = $this->getNamespaceFromFqn($fullyQualifiedName);
 
@@ -64,6 +66,8 @@ class Index
             'fqn' => $fullyQualifiedName,
             'namespace' => $namespaceName,
             'type' => $type,
+            'extends' => $extendedClass,
+            'implements' => $implementedInterfaces,
             'file' => $this->filename,
             'startLine' => $startLine,
             'endLine' => $endLine
