@@ -1,17 +1,17 @@
 <div class="col-sm-3">
     <?php foreach ($this->classes as $class) { ?>
-        <a href="/<?php echo urlencode($class->get('fqn')) ?>"><?php echo $class->get('fqn') ?></a><br/>
+        <a href="/<?php echo urlencode($class->get('name.fqn')) ?>"><?php echo $class->get('name.fqn') ?></a><br/>
     <?php } ?>
 </div>
 <div class="col-sm-9">
     <?php foreach ($this->classes as $class) { ?>
-        <?php if ($class->get('fqn') == $this->fqn) { ?>
-            <h4><?php echo $class->get('fqn') ?></h4>
+        <?php if ($class->get('name.fqn') == $this->fqn) { ?>
+            <h4><?php echo $class->get('name.fqn') ?></h4>
             <?php $extendedClass = $class->get('extends') ?>
             <?php if (is_array($extendedClass) && !empty($extendedClass)) { ?>
                 Extends:
+                    <li><?php echo $extendedClass['name.fqn'] ?></li>
                 <ul>
-                    <li><?php echo $extendedClass['fqn'] ?></li>
                 </ul>
             <?php } ?>
             <?php $implementedInterfaces = $class->get('implements') ?>
@@ -19,7 +19,7 @@
                 Implements:
                 <ul>
                 <?php foreach ($implementedInterfaces as $implementedInterface) { ?>
-                    <li><?php echo $implementedInterface['fqn'] ?></li>
+                    <li><?php echo $implementedInterface['name.fqn'] ?></li>
                 <?php } ?>
                 </ul>
             <?php } ?>
@@ -50,6 +50,7 @@
                 <?php } ?>
                 </ul>
             <?php } ?>
+            <?php ini_set('xdebug.var_display_max_depth', 10); var_dump($class); ?>
         <?php } ?>
     <?php } ?>
 </div>

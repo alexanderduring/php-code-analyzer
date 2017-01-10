@@ -69,8 +69,9 @@ class AnalyzeController extends AbstractActionController
         $documentManager->remove('classes');
 
         foreach ($definitions as $definition) {
-            if (array_key_exists($definition['fqn'], $usages)) {
-                $definition['usages'] = $usages[$definition['fqn']];
+            $fullyQualifiedClassname = $definition['name']['fqn'];
+            if (array_key_exists($fullyQualifiedClassname, $usages)) {
+                $definition['usages'] = $usages[$fullyQualifiedClassname];
             }
             $documentManager->insert('classes', $definition);
         }
@@ -82,6 +83,7 @@ class AnalyzeController extends AbstractActionController
         );
 
         file_put_contents('data/results/results.json', json_encode($results));
+        //var_dump($index->getNamespaces());
     }
 
 
@@ -104,7 +106,7 @@ class AnalyzeController extends AbstractActionController
 
         foreach ($definitions as $definition) {
             $type = $definition['type'];
-            $fqn = $definition['fqn'];
+            $fqn = $definition['name']['fqn'];
             $file = $definition['file'];
             $start = $definition['startLine'];
             $end = $definition['endLine'];

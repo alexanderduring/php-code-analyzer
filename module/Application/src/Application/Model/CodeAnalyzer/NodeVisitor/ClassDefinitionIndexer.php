@@ -144,14 +144,16 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     private function addEntryToIndex(Node $node, $type)
     {
         if (property_exists($node, 'namespacedName')) {
-            $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
+            $nameParts = $node->namespacedName->parts;
 
             // Extended classes
             $extendsNode = $node->extends;
             if ($extendsNode instanceof Node\Name\FullyQualified) {
                 $extendedClass = array(
-                    'fqn' => $extendsNode->toString(),
-                    'nameParts' => $extendsNode->parts
+                    'name' => array(
+                        'fqn' => $extendsNode->toString(),
+                        'parts' => $extendsNode->parts
+                    )
                 );
             } else {
                 $extendedClass = null;
@@ -162,15 +164,18 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
             $implementedInterfaces = array();
             foreach($implementsNodes as $implementsNode) {
                 $interface = array(
-                    'fqn' => $implementsNode->toString(),
-                    'nameParts' => $implementsNode->parts
+                    'name' => array(
+                       'fqn' => $implementsNode->toString(),
+                       'parts' => $implementsNode->parts
+                    )
                 );
                 $implementedInterfaces[] = $interface;
             }
+            $implementedInterfaces = empty($implementedInterfaces) ? null : $implementedInterfaces;
 
             $startLine = $node->getAttribute('startLine');
             $endLine = $node->getAttribute('endLine');
-            $this->index->addClass($fullyQualifiedClassName, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine);
+            $this->index->addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine);
         } else {
             print_r($node);
             exit("Found class definition without name.");

@@ -50,21 +50,23 @@ class Index
 
 
     /**
-     * @param string $fullyQualifiedName
+     * @param array $nameParts
      * @param string $type (class|abstract-class|interface)
      * @param array $extendedClass
      * @param array $implementedInterfaces
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addClass($fullyQualifiedName, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine)
+    public function addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine)
     {
-        $namespaceName = $this->getNamespaceFromFqn($fullyQualifiedName);
+        $fullyQualifiedName = implode('\\', $nameParts);
 
         // Add class definition to index
         $this->index['definitions'][$fullyQualifiedName] = array(
-            'fqn' => $fullyQualifiedName,
-            'namespace' => $namespaceName,
+            'name' => array(
+                'fqn' => $fullyQualifiedName,
+                'parts' => $nameParts
+            ),
             'type' => $type,
             'extends' => $extendedClass,
             'implements' => $implementedInterfaces,
@@ -74,6 +76,7 @@ class Index
         );
 
         // Add/update namespace information
+        $namespaceName = $this->getNamespaceFromNameParts($nameParts);
         if (!array_key_exists($namespaceName, $this->index['namespaces'])) {
             $this->index['namespaces'][$namespaceName] = array(
                 'directDescendents' => 0,
@@ -217,6 +220,16 @@ class Index
     /**
      * @return array
      */
+    public function getNamespaces()
+    {
+        return $this->index['namespaces'];
+    }
+
+
+
+    /**
+     * @return array
+     */
     public function getUsages()
     {
         return $this->index['usages'];
@@ -273,19 +286,13 @@ class Index
 
 
     /**
-     * @param string $fullyQualifiedName
+     * @param array $nameParts
      * @return string
      */
-    private function getNamespaceFromFqn($fullyQualifiedName)
+    private function getNamespaceFromNameParts($nameParts)
     {
-        $fullyQualifiedName = ltrim($fullyQualifiedName, '\\');
-        $positionLastBackslash = strrpos($fullyQualifiedName, '\\');
-
-        if ($positionLastBackslash !== false) {
-            $namespace = '\\';
-        } else {
-            $namespace = substr($fullyQualifiedName, 0, $positionLastBackslash+1);
-        }
+        array_pop($nameParts);
+        $namespace = empty($nameParts) ? '\\' : implode('\\', $nameParts);
 
         return $namespace;
     }
