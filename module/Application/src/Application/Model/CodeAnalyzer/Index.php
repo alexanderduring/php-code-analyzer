@@ -75,17 +75,7 @@ class Index
             'endLine' => $endLine
         );
 
-        // Add/update namespace information
-        $namespaceName = $this->getNamespaceFromNameParts($nameParts);
-        if (!array_key_exists($namespaceName, $this->index['namespaces'])) {
-            $this->index['namespaces'][$namespaceName] = array(
-                'directDescendents' => 0,
-                'allDescendents' => null,
-                'subNamespaces' => array()
-            );
-        }
-        $this->index['namespaces'][$namespaceName]['directDescendents'] += 1;
-        $this->index['namespaces'][$namespaceName]['directDescendents'] += 1;
+        $this->updateNamespaceStatistik($nameParts);
     }
 
 
@@ -285,15 +275,56 @@ class Index
 
 
 
-    /**
-     * @param array $nameParts
-     * @return string
-     */
-    private function getNamespaceFromNameParts($nameParts)
+    private function updateNamespaceStatistik($nameParts)
     {
+        // Remove class name
         array_pop($nameParts);
-        $namespace = empty($nameParts) ? '\\' : implode('\\', $nameParts);
 
-        return $namespace;
+        // find out current namespace and increase direct descendents
+        $namespace = empty($nameParts) ? '\\' : implode('\\', $nameParts);
+        $this->increaseDirectCountForNamespace($namespace);
+
+        // increase count for all parent namespaces
+        while (count($nameParts) > 0) {
+            array_pop($nameParts);
+            $subNamespace = $namespace;
+            $namespace = empty($nameParts) ? '\\' : implode('\\', $nameParts);
+            $this->updateParentNamespace($namespace, $subNamespace);
+        }
+    }
+
+
+
+    private function increaseDirectCountForNamespace($namespace)
+    {
+        $this->createNamespaceEntryIfNotExists($namespace);
+        $this->index['namespaces'][$namespace]['directDescendents'] += 1;
+    }
+
+
+
+    private function updateParentNamespace($namespace, $subNamespace)
+    {
+        $this->createNamespaceEntryIfNotExists($namespace);
+        $this->index['namespaces'][$namespace]['allDescendents'] += 1;
+
+        // Here I use the key to store the array entries, because it is much faster than using unique afterwards
+        $this->index['namespaces'][$namespace]['subNamespaces'][$subNamespace] = true;
+    }
+
+
+
+    private function createNamespaceEntryIfNotExists($namespace)
+    {
+        if (!array_key_exists($namespace, $this->index['namespaces'])) {
+            $this->index['namespaces'][$namespace] = array(
+                'name' => array(
+                    'fqn' => $namespace
+                ),
+                'directDescendents' => 0,
+                'allDescendents' => 0,
+                'subNamespaces' => array()
+            );
+        }
     }
 }

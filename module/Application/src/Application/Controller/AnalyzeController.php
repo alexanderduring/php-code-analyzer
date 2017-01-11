@@ -64,6 +64,7 @@ class AnalyzeController extends AbstractActionController
         $definitions = $index->getDefinitions();
         $usages = $index->getUsages();
         $notices = $index->getNotices();
+        $namespaces = $index->getNamespaces();
 
         // Insert class definitions
         $documentManager->remove('classes');
@@ -76,9 +77,19 @@ class AnalyzeController extends AbstractActionController
             $documentManager->insert('classes', $definition);
         }
 
+        // Insert namespaces
+        $documentManager->remove('namespaces');
+
+        foreach ($namespaces as $namespaceName => $namespaceData) {
+            $namespaceData['subNamespaces'] = array_keys($namespaceData['subNamespaces']);
+            $documentManager->insert('namespaces', $namespaceData);
+        }
+
+
         $results = array(
             'definitions' => $definitions,
             'usages' => $usages,
+            'namespaces' => $namespaces,
             'notices' => $notices
         );
 
