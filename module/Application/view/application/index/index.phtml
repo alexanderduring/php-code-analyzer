@@ -1,57 +1,37 @@
-<div class="col-sm-3">
-    <?php foreach ($this->classes as $class) { ?>
-        <a href="/<?php echo urlencode($class->get('name.fqn')) ?>"><?php echo $class->get('name.fqn') ?></a><br/>
-    <?php } ?>
-</div>
-<div class="col-sm-9">
-    <?php foreach ($this->classes as $class) { ?>
-        <?php if ($class->get('name.fqn') == $this->fqn) { ?>
-            <h4><?php echo $class->get('name.fqn') ?></h4>
-            <?php $extendedClass = $class->get('extends') ?>
-            <?php if (is_array($extendedClass) && !empty($extendedClass)) { ?>
-                Extends:
-                    <li><?php echo $extendedClass['name.fqn'] ?></li>
-                <ul>
-                </ul>
-            <?php } ?>
-            <?php $implementedInterfaces = $class->get('implements') ?>
-            <?php if (is_array($implementedInterfaces) && !empty($implementedInterfaces)) { ?>
-                Implements:
-                <ul>
-                <?php foreach ($implementedInterfaces as $implementedInterface) { ?>
-                    <li><?php echo $implementedInterface['name.fqn'] ?></li>
-                <?php } ?>
-                </ul>
-            <?php } ?>
-            <?php $usagesWithNew = $class->get('usages.new') ?>
-            <?php if (is_array($usagesWithNew) && !empty($usagesWithNew)) { ?>
-                Usages with new:
-                <ul>
-                <?php foreach ($usagesWithNew as $usageWithNew) { ?>
-                    <li><?php echo $usageWithNew['context'] ?></li>
-                <?php } ?>
-                </ul>
-            <?php } ?>
-            <?php $usagesInTypeDeclaration = $class->get('usages.type-declaration') ?>
-            <?php if (is_array($usagesInTypeDeclaration) && !empty($usagesInTypeDeclaration)) { ?>
-                Usages in type declaration:
-                <ul>
-                <?php foreach ($usagesInTypeDeclaration as $usageInTypeDeclaration) { ?>
-                    <li><?php echo $usageInTypeDeclaration['context'] ?></li>
-                <?php } ?>
-                </ul>
-            <?php } ?>
-            <?php $usagesWithUse = $class->get('usages.use') ?>
-            <?php if (is_array($usagesWithUse) && !empty($usagesWithUse)) { ?>
-                Usages with use in files:
-                <ul>
-                <?php foreach ($usagesWithUse as $usageWithUse) { ?>
-                    <li><?php echo $usageWithUse['file'] ?></li>
-                <?php } ?>
-                </ul>
-            <?php } ?>
-            <?php ini_set('xdebug.var_display_max_depth', 10); var_dump($class); ?>
-        <?php } ?>
-    <?php } ?>
-</div>
+<?php
+$labels = '';
+foreach ($this->names as $name) {
+    $labels .= '"'.addslashes($name).'",';
+}
+$labels = rtrim($labels, ', ');
+$data = implode(',', $this->amounts);
 
+$this->inlineScript()->appendScript(<<<JS
+    jQuery(function() {
+        var data = {
+            labels: [{$labels}],
+            datasets: [
+                {
+                    data: [{$data}]
+                }
+            ]
+        };
+
+        var ctx = document.getElementById("myChart");
+
+        var myChart = new Chart(ctx,{
+            type: "doughnut",
+            data: data
+        });
+    });
+JS
+);
+?>
+<div class="col-sm-3">
+    <?php foreach ($this->namespaces as $namespace) { ?>
+        <a href="/<?php echo urlencode($namespace->get('name.fqn')) ?>"><?php echo $namespace->get('name.fqn') ?></a><br/>
+    <?php } ?>
+</div>
+<div class="col-sm-6">
+    <canvas id="myChart" width="200" height="200"></canvas>
+</div>

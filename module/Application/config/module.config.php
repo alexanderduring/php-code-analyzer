@@ -35,10 +35,20 @@ return array(
             'home' => array(
                 'type' => Zend\Mvc\Router\Http\Segment::class,
                 'options' => array(
-                    'route'    => '/[:fqn]',
+                    'route'    => '/',
                     'defaults' => array(
                         'controller' => 'Application\Controller\Index',
                         'action'     => 'index'
+                    )
+                )
+            ),
+            'classes' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/classes[/:fqn]',
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action'     => 'classes'
                     )
                 )
             )
