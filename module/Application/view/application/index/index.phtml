@@ -12,7 +12,26 @@ $this->inlineScript()->appendScript(<<<JS
             labels: [{$labels}],
             datasets: [
                 {
-                    data: [{$data}]
+                    data: [{$data}],
+                    backgroundColor: [
+                        '#803690',
+                        '#369080',
+                        '#908036',
+                        '#00ADF9',
+                        '#ADF900',
+                        '#F900AD',
+                        '#46BFBD',
+                        '#BFBD46',
+                        '#BD46BF',
+                        '#FDB45C',
+                        '#B45CFD',
+                        '#5CFDB4',
+                        '#949FB1',
+                        '#9FB194',
+                        '#4D5360',
+                        '#53604D',
+                        '#604D53'
+                    ]
                 }
             ]
         };
@@ -28,6 +47,13 @@ JS
 );
 ?>
 <div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div style="padding-top: 1em; padding-bottom: 1em">
+                <h2>Overview</h2>
+            </div>
+        </div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-sm-6">
             <canvas id="myChart" width="200" height="200"></canvas>
