@@ -35,6 +35,9 @@ return array(
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
+        ),
+        'strategies' => array(
+            'ViewJsonStrategy'
         )
     ),
     'router' => array(
@@ -56,6 +59,26 @@ return array(
                     'defaults' => array(
                         'controller' => 'Application\Controller\Index',
                         'action'     => 'd3BarChartOne'
+                    )
+                )
+            ),
+            'd3-bar-chart-two' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/d3-bar-chart-two',
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action'     => 'd3BarChartTwo'
+                    )
+                )
+            ),
+            'd3-get-data' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/d3-get-data',
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action'     => 'getData'
                     )
                 )
             ),
@@ -101,7 +124,8 @@ return array(
             'Classes' => 'classes'
         ),
         'D3.js Tutorial' => array(
-            'Bar Chart I' => 'd3-bar-chart-one'
+            'Bar Chart I (div)' => 'd3-bar-chart-one',
+            'Bar Chart II (svg)' => 'd3-bar-chart-two'
         )
     )
 );

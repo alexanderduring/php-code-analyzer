@@ -4,6 +4,7 @@ namespace Application\Controller;
 
 use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\JsonModel;
 
 class IndexController extends AbstractActionController
 {
@@ -37,6 +38,18 @@ class IndexController extends AbstractActionController
 
     public function d3BarChartOneAction()
     {
+    }
+
+
+
+    public function d3BarChartTwoAction()
+    {
+    }
+
+
+
+    public function getDataAction()
+    {
         // Setup Ember Db
         $documentManager = new DocumentManager();
         $documentManager->setDatabasePath('data/results');
@@ -50,11 +63,10 @@ class IndexController extends AbstractActionController
             $amounts[] = $namespace->get('allDescendents');
         }
 
-        return array(
-            'namespaces' => $namespaces,
-            'names' => $names,
-            'amounts' => $amounts
-        );
+
+        //echo json_encode(array(4, 8, 15, 16, 23, 42));
+
+        return new JsonModel(array(4, 8, 15, 16, 23, 42));
     }
 
 
