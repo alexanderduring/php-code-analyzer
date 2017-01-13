@@ -299,6 +299,7 @@ class Index
     {
         $this->createNamespaceEntryIfNotExists($namespace);
         $this->index['namespaces'][$namespace]['directDescendents'] += 1;
+        $this->index['namespaces'][$namespace]['allDescendents'] += 1;
     }
 
 
