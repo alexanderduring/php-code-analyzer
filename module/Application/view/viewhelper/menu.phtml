@@ -1,0 +1,32 @@
+<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">PHP Code Analyzer</a>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <?php foreach ($this->config as $menuName => $menuConfig) { ?>
+                  <?php $isMatchedMenu = false; ?>
+                <li class="nav-item dropdown <?php if ($isMatchedMenu) echo 'active'; ?>">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $menuName ?></a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <?php foreach ($menuConfig as $pageName => $pageRoute) {
+                            $isSeparator = $pageRoute === '-----';
+
+                            if ($isSeparator) {
+                                ?><?php
+                            } else {
+                                ?><a class="dropdown-item" href="<?php echo $this->url($pageRoute) ?>"><?php echo $pageName ?></a><?php
+                            }
+                        } ?>
+                    </div>
+                </li>
+            <?php } ?>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
