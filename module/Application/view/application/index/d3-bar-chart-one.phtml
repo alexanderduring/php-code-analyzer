@@ -1,0 +1,46 @@
+<?php
+$this->headStyle()->appendStyle(<<<CSS
+    .chart div {
+        font: 10px sans-serif;
+        background-color: steelblue;
+        text-align: right;
+        padding: 3px;
+        margin: 1px;
+        color: white;
+    }
+CSS
+);
+
+$this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.1/d3.js');
+$this->inlineScript()->appendScript(<<<JS
+    jQuery(function() {
+        var data = [4, 8, 15, 16, 23, 42];
+
+        var x = d3.scaleLinear()
+            .domain([0, d3.max(data)])
+            .range([0, 420]);
+
+        d3.select(".chart")
+          .selectAll("div")
+            .data(data)
+          .enter().append("div")
+            .style("width", function(d) { return x(d) + "px"; })
+            .text(function(d) { return d; });
+    });
+JS
+);
+?>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div style="padding-top: 1em; padding-bottom: 1em">
+                <h2>Overview</h2>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-12">
+            <div class="chart"></div>
+        </div>
+    </div>
+</div>

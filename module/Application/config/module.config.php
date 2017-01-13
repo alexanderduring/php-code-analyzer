@@ -49,6 +49,16 @@ return array(
                     )
                 )
             ),
+            'd3-bar-chart-one' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/d3-bar-chart-one',
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action'     => 'd3BarChartOne'
+                    )
+                )
+            ),
             'classes' => array(
                 'type' => Zend\Mvc\Router\Http\Segment::class,
                 'options' => array(
@@ -89,6 +99,9 @@ return array(
         'Menü' => array(
             'Home' => 'home',
             'Classes' => 'classes'
+        ),
+        'D3.js Tutorial' => array(
+            'Bar Chart I' => 'd3-bar-chart-one'
         )
     )
 );
