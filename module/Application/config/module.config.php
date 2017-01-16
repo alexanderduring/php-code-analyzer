@@ -91,6 +91,16 @@ return array(
                         'action'     => 'classes'
                     )
                 )
+            ),
+            'get-namespaces' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/get-namespaces',
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action'     => 'getNamespaces'
+                    )
+                )
             )
         )
     ),

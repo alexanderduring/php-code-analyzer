@@ -50,18 +50,6 @@ class IndexController extends AbstractActionController
 
     public function getDataAction()
     {
-        // Setup Ember Db
-        $documentManager = new DocumentManager();
-        $documentManager->setDatabasePath('data/results');
-
-        $namespaces = $documentManager->find('namespaces');
-
-        $names = [];
-        $amounts = [];
-        foreach ($namespaces as $namespace) {
-            $names[] = $namespace->get('name.fqn');
-            $amounts[] = $namespace->get('allDescendents');
-        }
 
 
         //echo json_encode(array(4, 8, 15, 16, 23, 42));
@@ -86,5 +74,25 @@ class IndexController extends AbstractActionController
             'fqn' => $fqn,
             'classes' => $classes
         );
+    }
+
+
+
+    public function getNamespacesAction()
+    {
+        // Setup Ember Db
+        $documentManager = new DocumentManager();
+        $documentManager->setDatabasePath('data/results');
+
+        $namespaces = $documentManager->find('namespaces');
+
+        $namespaceData = array();
+        foreach ($namespaces as $namespace) {
+            $namespaceData[] = $namespace->toArray();
+        }
+
+        $jsonModel = new JsonModel($namespaceData);
+
+        return $jsonModel;
     }
 }
