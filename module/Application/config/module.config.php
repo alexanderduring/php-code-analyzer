@@ -2,11 +2,11 @@
 
 return array(
     'controllers' => array(
-        'factories' => array(
-            'Application\Controller\Analyze' => 'Application\Controller\AnalyzeControllerFactory'
-        ),
         'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController'
+            Application\Controller\IndexController::class => Application\Controller\IndexController::class
+        ),
+        'factories' => array(
+            Application\Controller\AnalyzeController::class => Application\Controller\AnalyzeControllerFactory::class
         )
     ),
     'service_manager' => array(
