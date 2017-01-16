@@ -47,7 +47,7 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => Application\Controller\IndexController::class,
                         'action'     => 'index'
                     )
                 )
@@ -57,7 +57,7 @@ return array(
                 'options' => array(
                     'route'    => '/d3-bar-chart-one',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3BarChartOne'
                     )
                 )
@@ -67,7 +67,7 @@ return array(
                 'options' => array(
                     'route'    => '/d3-bar-chart-two',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3BarChartTwo'
                     )
                 )
@@ -77,7 +77,7 @@ return array(
                 'options' => array(
                     'route'    => '/d3-get-data',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => Application\Controller\IndexController::class,
                         'action'     => 'getData'
                     )
                 )
@@ -87,7 +87,7 @@ return array(
                 'options' => array(
                     'route'    => '/classes[/:fqn]',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => Application\Controller\IndexController::class,
                         'action'     => 'classes'
                     )
                 )
@@ -97,7 +97,7 @@ return array(
                 'options' => array(
                     'route'    => '/get-namespaces',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        'controller' => Application\Controller\IndexController::class,
                         'action'     => 'getNamespaces'
                     )
                 )
@@ -111,7 +111,7 @@ return array(
                     'options' => array(
                         'route'    => 'run [--ignore=] <path>',
                         'defaults' => array(
-                            'controller' => 'Application\Controller\Analyze',
+                            'controller' => Application\Controller\AnalyzeController::class,
                             'action'     => 'run'
                         )
                     )
@@ -120,7 +120,7 @@ return array(
                     'options' => array(
                         'route'    => 'report',
                         'defaults' => array(
-                            'controller' => 'Application\Controller\Analyze',
+                            'controller' => Application\Controller\AnalyzeController::class,
                             'action'     => 'report'
                         )
                     )
