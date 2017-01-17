@@ -11,7 +11,7 @@ return array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'CodeAnalyzer' => 'Application\Model\CodeAnalyzer\CodeAnalyzerFactory'
+            Application\Model\CodeAnalyzer\CodeAnalyzer::class => Application\Model\CodeAnalyzer\CodeAnalyzerFactory::class
         )
     ),
     'view_helpers' => array(

@@ -2,6 +2,7 @@
 
 namespace Application\Controller;
 
+use Application\Model\CodeAnalyzer\CodeAnalyzer;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -28,7 +29,7 @@ class AnalyzeControllerFactory implements FactoryInterface
         $analyzeController = new AnalyzeController();
 
         // Inject CodeAnalyzer
-        $codeAnalyzer = $this->serviceLocator->get('CodeAnalyzer');
+        $codeAnalyzer = $this->serviceLocator->get(CodeAnalyzer::class);
         $analyzeController->injectCodeAnalyzer($codeAnalyzer);
 
         return $analyzeController;

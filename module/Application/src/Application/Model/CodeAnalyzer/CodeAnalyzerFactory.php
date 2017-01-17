@@ -2,21 +2,19 @@
 
 namespace Application\Model\CodeAnalyzer;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
 use PhpParser\ParserFactory;
-use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class CodeAnalyzerFactory implements FactoryInterface
 {
     /**
-     * @param Zend\ServiceManager\ServiceLocatorInterface $serviceLocator
-     * @return Application\Model\CodeAnalyzer\CodeAnalyzer
+     * @param ServiceLocatorInterface $serviceLocator
+     * @return CodeAnalyzer
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
