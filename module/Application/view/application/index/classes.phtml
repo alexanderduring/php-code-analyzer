@@ -19,8 +19,8 @@
                     <?php $extendedClass = $class->get('extends') ?>
                     <?php if (is_array($extendedClass) && !empty($extendedClass)) { ?>
                         Extends:
-                            <li><?php echo $extendedClass['name.fqn'] ?></li>
                         <ul>
+                            <li><?php echo $extendedClass['name']['fqn'] ?></li>
                         </ul>
                     <?php } ?>
                     <?php $implementedInterfaces = $class->get('implements') ?>
@@ -28,7 +28,7 @@
                         Implements:
                         <ul>
                         <?php foreach ($implementedInterfaces as $implementedInterface) { ?>
-                            <li><?php echo $implementedInterface['name.fqn'] ?></li>
+                            <li><?php echo $implementedInterface['name']['fqn'] ?></li>
                         <?php } ?>
                         </ul>
                     <?php } ?>
@@ -50,6 +50,15 @@
                         <?php } ?>
                         </ul>
                     <?php } ?>
+                    <?php $usagesWithConstFetch = $class->get('usages.const-fetch') ?>
+                    <?php if (is_array($usagesWithConstFetch) && !empty($usagesWithConstFetch)) { ?>
+                        Usages with const fetch:
+                        <ul>
+                        <?php foreach ($usagesWithConstFetch as $usageWithConstFetch) { ?>
+                            <li><?php echo $usageWithConstFetch['context'] ?></li>
+                        <?php } ?>
+                        </ul>
+                    <?php } ?>
                     <?php $usagesWithUse = $class->get('usages.use') ?>
                     <?php if (is_array($usagesWithUse) && !empty($usagesWithUse)) { ?>
                         Usages with use in files:
@@ -59,6 +68,9 @@
                         <?php } ?>
                         </ul>
                     <?php } ?>
+                    <br/>
+                    <br/>
+                    <br/>
                     <?php ini_set('xdebug.var_display_max_depth', 10); var_dump($class); ?>
                 <?php } ?>
             <?php } ?>
