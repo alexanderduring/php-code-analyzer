@@ -12,7 +12,7 @@ use PhpParser\Node;
  */
 class ClassUsageIndexer extends NodeVisitorAbstract
 {
-    /** @var \Application\Model\CodeAnalyzer\Index */
+    /** @var Index */
     private $index;
 
     private $context = array('global');
@@ -20,7 +20,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
 
     /**
-     * @param \Application\Model\CodeAnalyzer\Index $index
+     * @param Index $index
      * @return void
      */
     public function injectIndex(Index $index)
@@ -70,10 +70,14 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
         // Found class method
         if ($node->getType() == 'Stmt_ClassMethod') {
-            //print_r($node);
             $this->analyzeClassMethod($node);
         }
 
+        if ($node->getType() == 'Expr_ClassConstFetch') {
+            $this->analyzeClassConstant($node);
+        }
+
+        $this->index->addNodeType($node->getType());
     }
 
 
@@ -209,6 +213,22 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
                 $this->index->addTypeDeclaration($parameter->type->toString(), $this->getContext(), $startLine, $endLine);
             }
+        }
+    }
+
+
+
+    private function analyzeClassConstant(Node\Expr\ClassConstFetch $classConstFetch)
+    {
+        $classNameNode = $classConstFetch->class;
+        $className = implode('\\', $classNameNode->parts);
+        $constName = $classConstFetch->name;
+
+        if ($className !== 'self') {
+            $startLine = $classConstFetch->getAttribute('startLine');
+            $endLine = $classConstFetch->getAttribute('endLine');
+
+            $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
         }
     }
 

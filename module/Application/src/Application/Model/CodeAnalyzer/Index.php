@@ -21,6 +21,7 @@ class Index
     const USAGE_NEW = 'new';
     const USAGE_USE = 'use';
     const USAGE_TYPE_DECLARATION = 'type-declaration';
+    const USAGE_CONST_FETCH = 'const-fetch';
 
     const NOTICE_NEW_WITH_VARIABLE = 'new-with-variable';
     const NOTICE_UNKNOWN_NEW = 'unknown-new';
@@ -37,6 +38,8 @@ class Index
     /** @var string */
     private $filename;
 
+    public $foundNodeTypes = array();
+
 
 
     /**
@@ -45,6 +48,16 @@ class Index
     public function setFilename($filename)
     {
         $this->filename = $filename;
+    }
+
+
+
+    public function addNodeType($type)
+    {
+        if (!in_array($type, $this->foundNodeTypes)) {
+            $this->foundNodeTypes[] = $type;
+            //echo $type."\n";
+        }
     }
 
 
@@ -193,6 +206,13 @@ class Index
     public function addTypeDeclaration($fullyQualifiedName, $context, $startLine, $endLine)
     {
         $this->addUsage(self::USAGE_TYPE_DECLARATION, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
+    }
+
+
+
+    public function addConstantFetch($classFqn, $constantName, $context, $startLine, $endLine)
+    {
+        $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $this->filename, $startLine, $endLine);
     }
 
 
