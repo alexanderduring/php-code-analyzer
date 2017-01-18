@@ -73,8 +73,14 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             $this->analyzeClassMethod($node);
         }
 
+        // Found usage of class constant
         if ($node->getType() == 'Expr_ClassConstFetch') {
             $this->analyzeClassConstant($node);
+        }
+
+        // Found usage in static call
+        if ($node->getType() == 'Expr_StaticCall') {
+            $this->analyzeStaticCall($node);
         }
 
         $this->index->addNodeType($node->getType());
@@ -229,6 +235,24 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             $endLine = $classConstFetch->getAttribute('endLine');
 
             $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
+        }
+    }
+
+
+
+    private function analyzeStaticCall(Node\Expr\StaticCall $staticCall)
+    {
+        $classNameNode = $staticCall->class;
+        $className = implode('\\', $classNameNode->parts);
+
+        if ($className !== 'parent') {
+            $methodName = $staticCall->name;
+            $args = $staticCall->args;
+
+            $startLine = $staticCall->getAttribute('startLine');
+            $endLine = $staticCall->getAttribute('endLine');
+
+            $this->index->addStaticCall($className, $methodName, $this->getContext(), $startLine, $endLine);
         }
     }
 

@@ -18,10 +18,11 @@ namespace Application\Model\CodeAnalyzer;
  */
 class Index
 {
-    const USAGE_NEW = 'new';
-    const USAGE_USE = 'use';
-    const USAGE_TYPE_DECLARATION = 'type-declaration';
     const USAGE_CONST_FETCH = 'const-fetch';
+    const USAGE_NEW = 'new';
+    const USAGE_STATIC_CALL = 'static-call';
+    const USAGE_TYPE_DECLARATION = 'type-declaration';
+    const USAGE_USE = 'use';
 
     const NOTICE_NEW_WITH_VARIABLE = 'new-with-variable';
     const NOTICE_UNKNOWN_NEW = 'unknown-new';
@@ -213,6 +214,13 @@ class Index
     public function addConstantFetch($classFqn, $constantName, $context, $startLine, $endLine)
     {
         $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $this->filename, $startLine, $endLine);
+    }
+
+
+
+    public function addStaticCall($classFqn, $methodName, $context, $startLine, $endLine)
+    {
+        $this->addUsage(self::USAGE_STATIC_CALL, $classFqn, $context, $this->filename, $startLine, $endLine);
     }
 
 

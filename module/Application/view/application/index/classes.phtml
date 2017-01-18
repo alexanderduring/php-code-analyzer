@@ -59,6 +59,15 @@
                         <?php } ?>
                         </ul>
                     <?php } ?>
+                    <?php $usagesWithStaticCall = $class->get('usages.static-call') ?>
+                    <?php if (is_array($usagesWithStaticCall) && !empty($usagesWithStaticCall)) { ?>
+                        Usages with static call:
+                        <ul>
+                        <?php foreach ($usagesWithStaticCall as $usageWithStaticCall) { ?>
+                            <li><?php echo $usageWithStaticCall['context'] ?></li>
+                        <?php } ?>
+                        </ul>
+                    <?php } ?>
                     <?php $usagesWithUse = $class->get('usages.use') ?>
                     <?php if (is_array($usagesWithUse) && !empty($usagesWithUse)) { ?>
                         Usages with use in files:
