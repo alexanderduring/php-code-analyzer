@@ -48,6 +48,18 @@ class IndexController extends AbstractActionController
 
 
 
+    public function d3DoughnutChartAction()
+    {
+    }
+
+
+
+    public function d3SunburstChartAction()
+    {
+    }
+
+
+
     public function getDataAction()
     {
 
