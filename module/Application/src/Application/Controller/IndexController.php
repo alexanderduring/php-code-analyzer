@@ -96,14 +96,10 @@ class IndexController extends AbstractActionController
         $documentManager = new DocumentManager();
         $documentManager->setDatabasePath('data/results');
 
-        $namespaces = $documentManager->find('namespaces');
+        $foundEntries = $documentManager->find('namespaces');
+        $namespaces = $foundEntries[0];
 
-        $namespaceData = array();
-        foreach ($namespaces as $namespace) {
-            $namespaceData[] = $namespace->toArray();
-        }
-
-        $jsonModel = new JsonModel($namespaceData);
+        $jsonModel = new JsonModel($namespaces->toArray());
 
         return $jsonModel;
     }

@@ -2,6 +2,8 @@
 
 namespace Application\Model\CodeAnalyzer;
 
+use Application\Model\CodeAnalyzer\Index\NamespaceTree;
+
 /**
  * This class holds all results of the code analyzing
  *
@@ -40,6 +42,8 @@ class Index
     private $filename;
 
     public $foundNodeTypes = array();
+
+    private $namespaceTree = null;
 
 
 
@@ -245,6 +249,16 @@ class Index
 
 
 
+    public function getNamespaceTree()
+    {
+        if (is_null($this->namespaceTree)) {
+            $this->namespaceTree = new NamespaceTree($this->getNamespaces());
+        }
+
+        return $this->namespaceTree;
+    }
+
+
     /**
      * @return array
      */
@@ -326,8 +340,8 @@ class Index
     private function increaseDirectCountForNamespace($namespace)
     {
         $this->createNamespaceEntryIfNotExists($namespace);
-        $this->index['namespaces'][$namespace]['directDescendents'] += 1;
-        $this->index['namespaces'][$namespace]['allDescendents'] += 1;
+        $this->index['namespaces'][$namespace]['countDirectDescendents'] += 1;
+        $this->index['namespaces'][$namespace]['countAllDescendents'] += 1;
     }
 
 
@@ -335,7 +349,7 @@ class Index
     private function updateParentNamespace($namespace, $subNamespace)
     {
         $this->createNamespaceEntryIfNotExists($namespace);
-        $this->index['namespaces'][$namespace]['allDescendents'] += 1;
+        $this->index['namespaces'][$namespace]['countAllDescendents'] += 1;
 
         // Here I use the key to store the array entries, because it is much faster than using unique afterwards
         $this->index['namespaces'][$namespace]['subNamespaces'][$subNamespace] = true;
@@ -350,8 +364,8 @@ class Index
                 'name' => array(
                     'fqn' => $namespace
                 ),
-                'directDescendents' => 0,
-                'allDescendents' => 0,
+                'countDirectDescendents' => 0,
+                'countAllDescendents' => 0,
                 'subNamespaces' => array()
             );
         }
