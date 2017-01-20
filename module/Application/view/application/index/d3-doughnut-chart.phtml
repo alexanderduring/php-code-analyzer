@@ -1,21 +1,8 @@
 <?php
-$this->headStyle()->appendStyle(<<<CSS
-    .chart rect {
-        fill: steelblue;
-    }
-
-    .chart text {
-        fill: white;
-        font: 10px sans-serif;
-        text-anchor: end;
-    }
-CSS
-);
 
 $this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.1/d3.js');
 $this->inlineScript()->appendScript(<<<JS
     jQuery(function() {
-        var data = [4, 8, 15, 16, 23, 42];
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
         var width = 420;
@@ -32,20 +19,25 @@ $this->inlineScript()->appendScript(<<<JS
               .attr("width", width)
               .attr("height", height);
 
-        var pie = d3.pie();
+        var pie = d3.pie()
+            .sort(null);
 
-        var arcs = svg.selectAll("g.arc")
-              .data(pie(data))
-            .enter().append("g")
-              .attr("class", "arc")
-              .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
+        d3.json("/d3-get-data", function(error, data) {
+            if (error) throw error;
 
-        arcs.append("path")
-              .attr("fill", function(d, i) {
-                  return color(i);
-              })
-              .attr("stroke", "white")
-              .attr("d", arc);
+            var arcs = svg.selectAll("g.arc")
+                  .data(pie(data))
+                .enter().append("g")
+                  .attr("class", "arc")
+                  .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
+
+            arcs.append("path")
+                  .attr("fill", function(d, i) {
+                      return color(i);
+                  })
+                  .attr("stroke", "white")
+                  .attr("d", arc);
+        });
     });
 JS
 );
