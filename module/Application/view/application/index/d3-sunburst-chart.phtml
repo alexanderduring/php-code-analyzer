@@ -1,21 +1,30 @@
 <?php
-$this->headStyle()->appendStyle(<<<CSS
-    .chart rect {
-        fill: steelblue;
-    }
-
-    .chart text {
-        fill: white;
-        font: 10px sans-serif;
-        text-anchor: end;
-    }
-CSS
-);
 
 $this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.1/d3.js');
 $this->inlineScript()->appendScript(<<<JS
     jQuery(function() {
-        var data = [4, 8, 15, 16, 23, 42];
+        var data = {
+            "name":"foo",
+            "children": [
+                {
+                    "name": "bar",
+                    "children": [
+                        {
+                            "name":"baz",
+                            "value":12
+                        },
+                        {
+                            "name":"bat",
+                            "value":18
+                        }
+                    ]
+                },
+                {
+                    "name": 11,
+                    "value": 5
+                }
+            ]
+        };
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
         var width = 420;
@@ -23,29 +32,36 @@ $this->inlineScript()->appendScript(<<<JS
 
         var outerRadius = d3.min([width, height]) / 2;
         var innerRadius = outerRadius / 2;
-        var arc = d3.arc()
-            .innerRadius(innerRadius)
-            .outerRadius(outerRadius);
 
         var svg = d3.select("div.chart")
             .append("svg")
               .attr("width", width)
-              .attr("height", height);
-
-        var pie = d3.pie();
-
-        var arcs = svg.selectAll("g.arc")
-              .data(pie(data))
-            .enter().append("g")
-              .attr("class", "arc")
+              .attr("height", height)
+            .append("g")
               .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
 
-        arcs.append("path")
+        var hierarchy = d3.hierarchy(data);
+        console.log(hierarchy);
+
+        var partition = d3.partition()
+            .size([2 * Math.PI, outerRadius * outerRadius]);
+
+        var arc = d3.arc()
+            .startAngle(function(d) { return d.x; })
+            .endAngle(function(d) { return d.x + d.dx; })
+            .innerRadius(function(d) { return Math.sqrt(d.y); })
+            .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+
+        var path = svg.selectAll("path")
+              .data(hierarchy)
+            .enter().append("path")
               .attr("fill", function(d, i) {
                   return color(i);
               })
               .attr("stroke", "white")
               .attr("d", arc);
+
+        console.log(hierarchy);
     });
 JS
 );
