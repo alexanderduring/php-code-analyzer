@@ -82,6 +82,16 @@ return array(
                     )
                 )
             ),
+            'd3-partition-chart' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/d3-partition-chart',
+                    'defaults' => array(
+                        'controller' => Application\Controller\IndexController::class,
+                        'action'     => 'd3PartitionChart'
+                    )
+                )
+            ),
             'd3-sunburst-chart' => array(
                 'type' => Zend\Mvc\Router\Http\Segment::class,
                 'options' => array(
@@ -157,6 +167,7 @@ return array(
             'Bar Chart I (div)' => 'd3-bar-chart-one',
             'Bar Chart II (svg)' => 'd3-bar-chart-two',
             'Doughnut Chart' => 'd3-doughnut-chart',
+            'Partition Chart' => 'd3-partition-chart',
             'Sunburst Chart' => 'd3-sunburst-chart'
         )
     )

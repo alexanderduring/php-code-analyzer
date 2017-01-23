@@ -1,0 +1,69 @@
+<?php
+
+$this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.1/d3.js');
+$this->inlineScript()->appendScript(<<<JS
+    jQuery(function() {
+        var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+        var data = {
+            "name": "foo",
+            "subNamespaces": [
+                {
+                    "name": "bar",
+                    "countDirectDescendents": 24
+                },
+                {
+                    "name": "bar",
+                    "countDirectDescendents": 34
+                },
+                {
+                    "name": "baz",
+                    "countDirectDescendents": 45
+                }
+            ]
+        };
+
+        var hierarchy = d3.hierarchy(data, function (d) { return d.subNamespaces })
+
+        var partition = d3.partition()
+            .size([500, 300])
+            .padding(1)
+            .round(true);
+
+        var root = hierarchy.sum(function (d) { return d.countDirectDescendents })
+
+        partition(root);
+        console.log(root.descendants());
+
+        var svg = d3.select(".chart")
+            .append("svg")
+              .attr("width", 500)
+              .attr("height", 300)
+            .append("g");
+
+        var rect = svg.selectAll("rect")
+            .data(root.descendants())
+            .enter().append("rect")
+              .attr("x", function (d) { return d.y0; })
+              .attr("y", function (d) { return d.x0; })
+              .attr("width", function (d) { return d.y1 - d.y0; })
+              .attr("height", function (d) { return d.x1 - d.x0; })
+              .attr("fill", function (d, i) { return color(i); });
+    });
+JS
+);
+?>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div style="padding-top: 1em; padding-bottom: 1em">
+                <h2>Overview</h2>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-12">
+            <div class="chart"></div>
+        </div>
+    </div>
+</div>

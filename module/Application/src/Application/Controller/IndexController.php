@@ -54,6 +54,12 @@ class IndexController extends AbstractActionController
 
 
 
+    public function d3PartitionChartAction()
+    {
+    }
+
+
+
     public function d3SunburstChartAction()
     {
     }
