@@ -76,9 +76,12 @@ class NamespaceTree
         $subTree = &$this->namespaceTree;
         foreach ($namespaceParts as $namespacePart) {
             if (!array_key_exists($namespacePart, $subTree)) {
-                $subTree[$namespacePart] = array();
+                $subTree[$namespacePart] = array(
+                    'name' => $namespacePart,
+                    'children' => array()
+                );
             }
-            $subTree = &$subTree[$namespacePart];
+            $subTree = &$subTree[$namespacePart]['children'];
         }
 
         $subTree[] = array(
@@ -89,5 +92,41 @@ class NamespaceTree
             'numClasses' => 1,
             'numLines' => $numLines
         );
+    }
+
+
+
+    private function namespaceExists($namespaceName, $children)
+    {
+        $exists = false;
+        foreach ($children as $child) {
+            if ($child['name'] === $namespaceName) {
+                $exists = true;
+            }
+        }
+
+        return $exists;
+    }
+
+
+
+    private function getNamespace($namespaceParts, &$tree)
+    {
+        if (count($namespaceParts) > 1) {
+            // Then usual case
+            $parentNamespaceParts = $namespaceParts;
+            array_splice($parentNamespaceParts, -1);
+
+            // Get parent namespace
+            $parentNamespace = $this->getNamespace($parentNamespaceParts, $tree);
+
+            // Check if parent namespace has children
+            if (array_key_exists('children', $parentNamespace)) {
+            }
+
+        } else {
+            // namespace is \
+
+        }
     }
 }
