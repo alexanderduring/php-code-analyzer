@@ -2,8 +2,6 @@
 
 namespace Application\Model\CodeAnalyzer;
 
-use Application\Model\CodeAnalyzer\Index\NamespaceTree;
-
 /**
  * This class holds all results of the code analyzing
  *
@@ -42,8 +40,6 @@ class Index
     private $filename;
 
     public $foundNodeTypes = array();
-
-    private $namespaceTree = null;
 
 
 
@@ -93,7 +89,7 @@ class Index
             'endLine' => $endLine
         );
 
-        $this->updateNamespaceStatistik($nameParts);
+        $this->updateNamespaceStatistik($nameParts, $endLine - $startLine);
     }
 
 
@@ -249,16 +245,6 @@ class Index
 
 
 
-    public function getNamespaceTree()
-    {
-        if (is_null($this->namespaceTree)) {
-            $this->namespaceTree = new NamespaceTree($this->getNamespaces());
-        }
-
-        return $this->namespaceTree;
-    }
-
-
     /**
      * @return array
      */
@@ -317,7 +303,7 @@ class Index
 
 
 
-    private function updateNamespaceStatistik($nameParts)
+    private function updateNamespaceStatistik($nameParts, $numLines)
     {
         // Remove class name
         array_pop($nameParts);

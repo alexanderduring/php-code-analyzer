@@ -4,14 +4,7 @@ namespace Application\Model\CodeAnalyzer\Index;
 
 class NamespaceTree
 {
-    private $namespaceTree;
-
-
-
-    public function __construct(array $namespaces)
-    {
-        $this->namespaceTree = $this->buildNamespaceTree('\\', $namespaces);
-    }
+    private $namespaceTree = array();
 
 
 
@@ -24,13 +17,13 @@ class NamespaceTree
     /**
      * This is a recursive method of building a namespace tree,
      * by first building all its subnamespace trees and then
-     * putting them togetger.
+     * putting them together.
      *
      * @param $fqn
      * @param array $namespaces
      * @return array
      */
-    private function buildNamespaceTree($fqn, array $namespaces)
+    private function buildNamespaceTreeOld($fqn, array $namespaces)
     {
         // Find $fqn namespace
         $parentNamespace = null;
@@ -56,12 +49,45 @@ class NamespaceTree
         $subNamespaces = array();
 
         foreach ($parentNamespace['subNamespaces'] as $subFqn) {
-            $subNamespace = $this->buildNamespaceTree($subFqn, $namespaces);
+            $subNamespace = $this->buildNamespaceTreeOld($subFqn, $namespaces);
 
             $subNamespaces[$subFqn] = $subNamespace;
         }
         $parentNamespace['subNamespaces'] = $subNamespaces;
 
         return $parentNamespace;
+    }
+
+
+
+    public function addClass($class)
+    {
+        $nameParts = $class->get('name.parts');
+        $fqn = $class->get('name.fqn');
+        $shortClassName = $nameParts[count($nameParts) - 1];
+        $numLines = $class->get('endLine') - $class->get('startLine');
+
+        // get namespace
+        $namespaceParts = $nameParts;
+        array_splice($namespaceParts, -1);
+        array_unshift($namespaceParts, '\\');
+
+        // Add class to namespace
+        $subTree = &$this->namespaceTree;
+        foreach ($namespaceParts as $namespacePart) {
+            if (!array_key_exists($namespacePart, $subTree)) {
+                $subTree[$namespacePart] = array();
+            }
+            $subTree = &$subTree[$namespacePart];
+        }
+
+        $subTree[] = array(
+            'name' => array(
+                'short' => $shortClassName,
+                'fqn' => $fqn
+            ),
+            'numClasses' => 1,
+            'numLines' => $numLines
+        );
     }
 }

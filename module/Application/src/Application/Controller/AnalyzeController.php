@@ -3,6 +3,7 @@
 namespace Application\Controller;
 
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
+use Application\Model\CodeAnalyzer\Index\NamespaceTree;
 use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
 
@@ -77,9 +78,14 @@ class AnalyzeController extends AbstractActionController
             $documentManager->insert('classes', $definition);
         }
 
-        // Insert namespaces
-        $documentManager->remove('namespaces');
-        $documentManager->insert('namespaces', $index->getNamespaceTree()->toArray());
+        // Create and insert namespace tree
+        $classes = $documentManager->find('classes');
+        $namespaceTree = new NamespaceTree();
+        foreach ($classes as $class) {
+            $namespaceTree->addClass($class);
+        }
+        $documentManager->remove('namespaceTree');
+        $documentManager->insert('namespaceTree', $namespaceTree->toArray());
 
 
         $results = array(
