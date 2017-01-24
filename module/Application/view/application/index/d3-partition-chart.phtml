@@ -7,7 +7,7 @@ $this->inlineScript()->appendScript(<<<JS
 
         var data = {
             "name": "foo",
-            "subNamespaces": [
+            "children": [
                 {
                     "name": "bar",
                     "countDirectDescendents": 24
@@ -23,7 +23,7 @@ $this->inlineScript()->appendScript(<<<JS
             ]
         };
 
-        var hierarchy = d3.hierarchy(data, function (d) { return d.subNamespaces })
+        var hierarchy = d3.hierarchy(data, function (d) { return d.children })
 
         var partition = d3.partition()
             .size([500, 300])
