@@ -7,7 +7,7 @@
   "description": "",
   "main": "",
   "moduleType": [],
-  "license": "GNU LESSER GENERAL PUBLIC LICENSE",
+  "license": "GNU General Public License v3.0",
   "ignore": [
     "**/.*",
     "node_modules",
