@@ -72,6 +72,26 @@ return array(
                     )
                 )
             ),
+            'd3-line-chart' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/d3-line-chart',
+                    'defaults' => array(
+                        'controller' => Application\Controller\IndexController::class,
+                        'action'     => 'd3LineChart'
+                    )
+                )
+            ),
+            'd3-line-chart-data' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/d3-line-chart-data',
+                    'defaults' => array(
+                        'controller' => Application\Controller\IndexController::class,
+                        'action'     => 'd3LineChartData'
+                    )
+                )
+            ),
             'd3-doughnut-chart' => array(
                 'type' => Zend\Mvc\Router\Http\Segment::class,
                 'options' => array(
@@ -166,6 +186,7 @@ return array(
         'D3.js Tutorial' => array(
             'Bar Chart I (div)' => 'd3-bar-chart-one',
             'Bar Chart II (svg)' => 'd3-bar-chart-two',
+            'Line Chart (svg)' => 'd3-line-chart',
             'Doughnut Chart' => 'd3-doughnut-chart',
             'Partition Chart' => 'd3-partition-chart',
             'Sunburst Chart' => 'd3-sunburst-chart'
