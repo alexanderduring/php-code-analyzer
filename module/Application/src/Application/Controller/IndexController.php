@@ -23,7 +23,7 @@ class IndexController extends AbstractActionController
         $amounts = [];
         foreach ($namespaces as $namespace) {
             $names[] = $namespace->get('name.fqn');
-            $amounts[] = $namespace->get('allDescendents');
+            $amounts[] = $namespace->get('countAllDescendents');
         }
 
         return array(

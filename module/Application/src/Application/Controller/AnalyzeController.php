@@ -87,6 +87,12 @@ class AnalyzeController extends AbstractActionController
         $documentManager->remove('namespaceTree');
         $documentManager->insert('namespaceTree', $namespaceTree->toArray());
 
+        // List of namespaces
+        $documentManager->remove('namespaces');
+        foreach ($namespaces as $namespaceName => $namespaceData) {
+            $namespaceData['subNamespaces'] = array_keys($namespaceData['subNamespaces']);
+            $documentManager->insert('namespaces', $namespaceData);
+        }
 
         $results = array(
             'definitions' => $definitions,
