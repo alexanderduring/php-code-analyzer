@@ -2,14 +2,14 @@
 $this->headStyle()->appendStyle(<<<CSS
     .chart text {
         fill: black;
-        font: 10px sans-serif;
+        font: 12px sans-serif;
         text-anchor: begin;
     }
 
     .chart {
         border: 1px solid black;
     }
-     
+
 CSS
 );
 
@@ -17,67 +17,89 @@ $this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4
 $this->inlineScript()->appendScript(<<<JS
     jQuery(function() {
 
+        // Set width and height of svg
         var svg = d3.select("svg");
-        svg.attr('width', '420').attr('height', '240');
+        svg.attr('width', '800').attr('height', '240');
 
-        var margin = {"top": 20, "right": 80, "bottom": 20, "left": 40};
+        // Define dimensions and margin of chart
+        var margin = {"top": 20, "right": 80, "bottom": 30, "left": 40};
         var width = svg.attr("width") - margin.left - margin.right;
         var height = svg.attr("height") - margin.top - margin.bottom;
         console.log('Width:' + width + ', Height:' + height);
 
+        // Create a time parser
+        var parseTime = d3.timeParse("%Y-%m-%d");
+
+        // Create a group node and move it
         var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        // Define tree scales
         var x = d3.scaleTime().range([0, width]);
-        var y = d3.scaleLinear().range([0, height]);
+        var y = d3.scaleLinear().range([height, 0]);
         var z = d3.scaleOrdinal(d3.schemeCategory10);
 
+        // Define a line
         var line = d3.line()
             .curve(d3.curveBasis)
             .x(function (d) { return x(d.date); })
             .y(function (d) { return y(d.temperature); });
 
-        d3.json("d3-line-chart-data", function (cities) {
+        // Load json data and do something with it
+        d3.json("d3-line-chart-data", function (datasets) {
 
-            cities.forEach(function (city) {
-                city.values.forEach(function (value) {
-                    value.date = Date.parse(value.date);
+            // Date strings are converted to unix timestamps
+            datasets.forEach(function (dataset) {
+                dataset.values.forEach(function (value) {
+                    value.date = parseTime(value.date);
                 });
             });
 
-            console.log(cities);
-
+            // The three defined scales are adapted to the given data.
             x.domain([
-                d3.min(cities, function (c) { return d3.min(c.values, function (d) { return d.date; }) }),
-                d3.max(cities, function (c) { return d3.max(c.values, function (d) { return d.date; }) })
+                d3.min(datasets, function (c) { return d3.min(c.values, function (d) { return d.date; }) }),
+                d3.max(datasets, function (c) { return d3.max(c.values, function (d) { return d.date; }) })
             ]);
             y.domain([
-                d3.min(cities, function (c) { return d3.min(c.values, function (d) { return d.temperature; }) }),
-                d3.max(cities, function (c) { return d3.max(c.values, function (d) { return d.temperature; }) })
+                d3.min(datasets, function (c) { return d3.min(c.values, function (d) { return d.temperature; }) }),
+                d3.max(datasets, function (c) { return d3.max(c.values, function (d) { return d.temperature; }) })
             ]);
-            z.domain(cities.map(function (c) { return c.id; }));
+            z.domain(datasets.map(function (c) { return c.id; }));
 
-            console.log(x);
-            console.log(y);
+            // Add axes
+            g.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+            g.append("g")
+                .attr("class", "axis axis--y")
+                .call(d3.axisLeft(y))
+                .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", "0.71em")
+                    .text("Temperature, ºC");
 
-            var city = g.selectAll(".city")
-                .data(cities)
+            // Add a group for every curve to svg.g and add class curve
+            var curve = g.selectAll(".curve")
+                .data(datasets)
                 .enter().append("g")
-                  .attr("class", "city");
+                  .attr("class", "curve");
 
-            city.append("path")
+            // Add a path to every curve g
+            curve.append("path")
                 .attr("class", "line")
                 .attr("d", function(d) { return line(d.values); })
                 .style("stroke", function(d) { return z(d.id); })
                 .style("fill", "none");
-            
-            city.append("text")
+
+            // Add a text at the end of the path to every curve g
+            curve.append("text")
                 .datum(function (d) { return { id: d.id, value: d.values[d.values.length - 1]}; })
                 .attr("transform", function (d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
                 .attr("dx", 3)
                 .attr("dy", "0.35em")
                 .style("font", "10px sans-serif")
-                .text(function (d) { return d.id; })
-                .co;
+                .text(function (d) { return d.id; });
         });
 
     });
