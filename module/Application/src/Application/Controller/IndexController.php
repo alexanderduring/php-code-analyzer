@@ -106,10 +106,13 @@ class IndexController extends AbstractActionController
 
     public function getDataAction()
     {
-        $length = rand(1, 20);
+        $length = rand(1, 12);
         $data = array();
         for ($i = 1; $i <= $length; $i++) {
-            $data[] = rand(1, 100);
+            $data[] = [
+                'label' => 'foo_' . rand(1, 100),
+                'count' => rand(1, 100)
+            ];
         }
 
         return new JsonModel($data);

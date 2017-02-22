@@ -25,6 +25,7 @@ $this->inlineScript()->appendScript(<<<JS
               .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
 
         var pie = d3.pie()
+            .value(function (d) { return d.count; })
             .sort(null);
 
         d3.json("/d3-get-data", function(error, data) {
@@ -38,7 +39,7 @@ $this->inlineScript()->appendScript(<<<JS
 
             arcs.append("path")
                   .attr("fill", function(d, i) {
-                      return color(i);
+                      return color(d.data.label);
                   })
                   .attr("stroke", "white")
                   .attr("d", arc);
@@ -50,8 +51,8 @@ $this->inlineScript()->appendScript(<<<JS
                   .attr("transform", function (d, index) {
                        var height = legendRectSize + legendSpacing;
                        var offset = height * color.domain().length / 2;
-                       var horizontal = outerRadius + 2 * legendRectSize;
-                       var vertical = index * height - offset;
+                       var horizontal = outerRadius + 2 * legendRectSize + 0.5;
+                       var vertical = index * height - offset + 0.5;
 
                        return "translate(" + horizontal + "," + vertical + ")";
                   });
@@ -61,6 +62,11 @@ $this->inlineScript()->appendScript(<<<JS
                 .attr("height", legendRectSize)
                 .style("fill", color)
                 .style("stroke", color);
+
+            legends.append("text")
+                .attr("x", legendRectSize + legendSpacing)
+                .attr("y", legendRectSize - legendSpacing)
+                .text(function (d) { return d; })
         });
     });
 JS
