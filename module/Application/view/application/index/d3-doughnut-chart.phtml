@@ -5,8 +5,11 @@ $this->inlineScript()->appendScript(<<<JS
     jQuery(function() {
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
-        var width = 420;
+        var width = 500;
         var height = 300;
+
+        var legendRectSize = 18;
+        var legendSpacing = 4;
 
         var outerRadius = d3.min([width, height]) / 2;
         var innerRadius = outerRadius / 2;
@@ -17,7 +20,9 @@ $this->inlineScript()->appendScript(<<<JS
         var svg = d3.select("div.chart")
             .append("svg")
               .attr("width", width)
-              .attr("height", height);
+              .attr("height", height)
+            .append("g")
+              .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
 
         var pie = d3.pie()
             .sort(null);
@@ -28,8 +33,8 @@ $this->inlineScript()->appendScript(<<<JS
             var arcs = svg.selectAll("g.arc")
                   .data(pie(data))
                 .enter().append("g")
-                  .attr("class", "arc")
-                  .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
+                  .attr("class", "arc");
+                  // .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
 
             arcs.append("path")
                   .attr("fill", function(d, i) {
@@ -37,6 +42,25 @@ $this->inlineScript()->appendScript(<<<JS
                   })
                   .attr("stroke", "white")
                   .attr("d", arc);
+
+            var legends = svg.selectAll("g.legend")
+                  .data(color.domain())
+                .enter().append("g")
+                  .attr("class", "legend")
+                  .attr("transform", function (d, index) {
+                       var height = legendRectSize + legendSpacing;
+                       var offset = height * color.domain().length / 2;
+                       var horizontal = outerRadius + 2 * legendRectSize;
+                       var vertical = index * height - offset;
+
+                       return "translate(" + horizontal + "," + vertical + ")";
+                  });
+
+            legends.append("rect")
+                .attr("width", legendRectSize)
+                .attr("height", legendRectSize)
+                .style("fill", color)
+                .style("stroke", color);
         });
     });
 JS
