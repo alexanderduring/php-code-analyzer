@@ -1,6 +1,14 @@
 <?php
 
 $this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.1/d3.js');
+$this->headStyle()->appendStyle(<<<CSS
+    .info text {
+            text-anchor: middle;
+            dominant-baseline: central;
+            font-size: 1.4em;
+    }
+CSS
+);
 $this->inlineScript()->appendScript(<<<JS
     jQuery(function() {
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
@@ -13,9 +21,10 @@ $this->inlineScript()->appendScript(<<<JS
 
         var outerRadius = d3.min([width, height]) / 2;
         var innerRadius = outerRadius / 2;
+
         var arc = d3.arc()
             .innerRadius(innerRadius)
-            .outerRadius(outerRadius);
+            .outerRadius(outerRadius - 4); // To save some space for the 3px stroke on mouse over
 
         var svg = d3.select("div.chart")
             .append("svg")
@@ -24,6 +33,15 @@ $this->inlineScript()->appendScript(<<<JS
             .append("g")
               .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
 
+        var info = svg.append("g")
+             .attr("class", "info");
+        var infoLabel = info.append("text")
+            .attr("x", 0)
+            .attr("y", -15);
+        var infoValue = info.append("text")
+            .attr("x", 0)
+            .attr("y", 15);
+
         var pie = d3.pie()
             .value(function (d) { return d.count; })
             .sort(null);
@@ -31,19 +49,42 @@ $this->inlineScript()->appendScript(<<<JS
         d3.json("/d3-get-data", function(error, data) {
             if (error) throw error;
 
+            // --- Arcs ---
             var arcs = svg.selectAll("g.arc")
                   .data(pie(data))
                 .enter().append("g")
                   .attr("class", "arc");
-                  // .attr("transform", "translate(" + outerRadius +  ", " + outerRadius + ")");
 
-            arcs.append("path")
+            var paths = arcs.append("path")
                   .attr("fill", function(d, i) {
                       return color(d.data.label);
                   })
                   .attr("stroke", "white")
-                  .attr("d", arc);
+                  .attr("d", arc)
+                  .on("mouseover", function (d) {
+                      d3.select(this)
+                          .style("stroke-width", 3)
+                          .attr("stroke", color(d.data.label));
+                  })
+                  .on("mouseout", function (d) {
+                      d3.select(this)
+                          .style("stroke-width", 1)
+                          .attr("stroke", "white");
+                  });
 
+            // --- Interactive info texts ---
+            arcs
+                .on("mouseover", function (arc) {
+                    infoLabel.text(arc.data.label);
+                    infoValue.text(arc.data.count);
+                    d3.select(this).moveToFront();
+                })
+                .on("mouseout", function (arc) {
+                    infoLabel.text('');
+                    infoValue.text('');
+                });
+
+            // --- Legend ---
             var legends = svg.selectAll("g.legend")
                   .data(color.domain())
                 .enter().append("g")
@@ -68,6 +109,13 @@ $this->inlineScript()->appendScript(<<<JS
                 .attr("y", legendRectSize - legendSpacing)
                 .text(function (d) { return d; })
         });
+
+        // Function to move element to front
+        d3.selection.prototype.moveToFront = function () {
+            return this.each(function () {
+                this.parentNode.appendChild(this);
+            });
+        };
     });
 JS
 );
