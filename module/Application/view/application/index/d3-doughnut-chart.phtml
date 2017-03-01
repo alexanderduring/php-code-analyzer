@@ -2,6 +2,15 @@
 
 $this->inlineScript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.1/d3.js');
 $this->headStyle()->appendStyle(<<<CSS
+    .legend rect {
+        cursor: pointer;
+        stroke-width: 1;
+    }
+
+    .legend rect.disabled {
+        fill: transparent !important;
+    }
+
     .info text {
             text-anchor: middle;
             dominant-baseline: central;
@@ -46,14 +55,24 @@ $this->inlineScript()->appendScript(<<<JS
             .value(function (d) { return d.count; })
             .sort(null);
 
-        d3.json("/d3-get-data", function(error, data) {
+        d3.json("/d3-get-data", function(error, datasets) {
             if (error) throw error;
+
+            // Enable all datasets
+            datasets.forEach(function (dataset) {
+                dataset.enabled = true;
+            })
 
             // --- Arcs ---
             var arcs = svg.selectAll("g.arc")
-                  .data(pie(data))
-                .enter().append("g")
-                  .attr("class", "arc");
+                  .data(pie(datasets))
+                .enter()
+                .append("g")
+                  .attr("class", "arc")
+                  .each(function (d) {
+                      // initializing a current value in every arc that will be used for animation
+                      this._current = d;
+                  });
 
             var paths = arcs.append("path")
                   .attr("fill", function(d, i) {
@@ -73,16 +92,15 @@ $this->inlineScript()->appendScript(<<<JS
                   });
 
             // --- Interactive info texts ---
-            arcs
-                .on("mouseover", function (arc) {
-                    infoLabel.text(arc.data.label);
-                    infoValue.text(arc.data.count);
-                    d3.select(this).moveToFront();
-                })
-                .on("mouseout", function (arc) {
-                    infoLabel.text('');
-                    infoValue.text('');
-                });
+            arcs.on("mouseover", function (arc) {
+                infoLabel.text(arc.data.label);
+                infoValue.text(arc.data.count);
+                d3.select(this).moveToFront();
+            });
+            arcs.on("mouseout", function (arc) {
+                infoLabel.text('');
+                infoValue.text('');
+            });
 
             // --- Legend ---
             var legends = svg.selectAll("g.legend")
@@ -102,7 +120,37 @@ $this->inlineScript()->appendScript(<<<JS
                 .attr("width", legendRectSize)
                 .attr("height", legendRectSize)
                 .style("fill", color)
-                .style("stroke", color);
+                .style("stroke", color)
+                .on('click', function (label) {
+                    var rect = d3.select(this);
+                    var rectIsEnabled;
+
+                    if (rect.attr('class') === 'disabled') {
+                        rect.attr('class', '');
+                        rectIsEnabled = true;
+                    } else {
+                        var totalEnabled = d3.sum(datasets.map(function (dataset) {
+                            return dataset.enabled ? 1 : 0;
+                        }));
+
+                        // At least one dataset needs to be enabled
+                        if (totalEnabled < 2) return;
+
+                        // At least two datasets are enabled so we can disable this one
+                        rect.attr('class', 'disabled');
+                        rectIsEnabled = false;
+                    }
+
+                    // Redefine the value function
+                    pie.value(function(dataset) {
+                        if (dataset.label === label) {
+                            dataset.enabled = rectIsEnabled;
+                            return dataset.enabled ? dataset.count : 0;
+                        }
+                    });
+
+                    arcs.data(pie(datasets));
+                });
 
             legends.append("text")
                 .attr("x", legendRectSize + legendSpacing)
