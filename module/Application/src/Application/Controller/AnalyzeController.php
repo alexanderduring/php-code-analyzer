@@ -3,6 +3,7 @@
 namespace Application\Controller;
 
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
+use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\Index\NamespaceTree;
 use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -167,18 +168,24 @@ class AnalyzeController extends AbstractActionController
         foreach ($notices as $notice) {
 
             switch ($notice['type']) {
-                case \Application\Model\CodeAnalyzer\Index::NOTICE_NEW_WITH_VARIABLE:
+                case Index::NOTICE_NEW_WITH_VARIABLE:
                     $string = "New with variable (new " . $notice['variable'] . ")";
                     break;
-                case \Application\Model\CodeAnalyzer\Index::NOTICE_UNKNOWN_NEW:
+                case Index::NOTICE_UNKNOWN_NEW:
                     $string = "New with unknown structure (" . $notice['nodeType'] . ")";
+                    break;
+                case Index::NOTICE_CONST_FETCH_WITH_VARIABLE:
+                    $string = "Const fetch with variable (" . $notice['variable'] . ")";
+                    break;
+                case Index::NOTICE_STATC_CALL_WITH_VARIABLE:
+                    $string = "Static call with variable (" . $notice['variable'] . ")";
                     break;
                 default:
                     $string = "Unknown notice";
             }
 
             $string .= " in " . $notice['context'];
-            $string .= " (" . $notice['file'] . ", line " . $notice['line'] . ")\n";
+            $string .= " (" . $notice['file'] . ", line " . $notice['startLine'] . "-" . $notice['endLine'] . ")\n";
 
             echo $string;
         }

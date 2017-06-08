@@ -226,33 +226,69 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
     private function analyzeClassConstant(Node\Expr\ClassConstFetch $classConstFetch)
     {
-        $classNameNode = $classConstFetch->class;
-        $className = implode('\\', $classNameNode->parts);
-        $constName = $classConstFetch->name;
+        $startLine = $classConstFetch->getAttribute('startLine');
+        $endLine = $classConstFetch->getAttribute('endLine');
+        $classNode = $classConstFetch->class;
 
-        if ($className !== 'self') {
-            $startLine = $classConstFetch->getAttribute('startLine');
-            $endLine = $classConstFetch->getAttribute('endLine');
+        switch ($classNode->getType()) {
+            // class constant statement with variable
+            case 'Expr_Variable':
+                $variableName = '$' . $classNode->name;
+                $this->index->addConstantFetchWithVariable($variableName, $this->getContext(), $startLine, $endLine);
+                break;
 
-            $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
+            case 'Name_FullyQualified':
+                $className = implode('\\', $classNode->parts);
+                $constName = $classConstFetch->name;
+                $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
+                break;
+
+            case 'Name':
+                $className = implode('\\', $classNode->parts);
+                $constName = $classConstFetch->name;
+
+                // @todo: $className could also be 'parent'.
+                if ($className !== 'self') {
+                    $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
+                } else {
+                    $this->index->addConstantFetchWithSelf($constName, $this->getContext(), $startLine, $endLine);
+                }
+                break;
+
+            default:
+                echo 'Unknown type of const fetch: '. $classNode->getType() . PHP_EOL;
+                var_export($classConstFetch);
         }
+
+
     }
 
 
 
     private function analyzeStaticCall(Node\Expr\StaticCall $staticCall)
     {
-        $classNameNode = $staticCall->class;
-        $className = implode('\\', $classNameNode->parts);
+        $startLine = $staticCall->getAttribute('startLine');
+        $endLine = $staticCall->getAttribute('endLine');
+        $classNode = $staticCall->class;
 
-        if ($className !== 'parent') {
-            $methodName = $staticCall->name;
-            $args = $staticCall->args;
+        switch ($classNode->getType()) {
+            case 'Expr_Variable':
+                $variableName = '$' . $classNode->name;
+                $methodName = $staticCall->name;
+                $args = $staticCall->args;
+                $this->index->addStaticCallWithVariable($variableName, $methodName, $args, $this->getContext(), $startLine, $endLine);
+                break;
 
-            $startLine = $staticCall->getAttribute('startLine');
-            $endLine = $staticCall->getAttribute('endLine');
+            default:
+                // This could be Name_FullyQualified or Name or may be other things.
+                $className = implode('\\', $classNode->parts);
 
-            $this->index->addStaticCall($className, $methodName, $this->getContext(), $startLine, $endLine);
+                if ($className !== 'parent') {
+                    $methodName = $staticCall->name;
+                    $args = $staticCall->args;
+
+                    $this->index->addStaticCall($className, $methodName, $args, $this->getContext(), $startLine, $endLine);
+                }
         }
     }
 

@@ -160,18 +160,21 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
             }
 
             // Implemented interfaces
-            $implementsNodes = $node->implements;
-            $implementedInterfaces = array();
-            foreach($implementsNodes as $implementsNode) {
-                $interface = array(
-                    'name' => array(
-                       'fqn' => $implementsNode->toString(),
-                       'parts' => $implementsNode->parts
-                    )
-                );
-                $implementedInterfaces[] = $interface;
+            if (property_exists($node, 'implements')) {
+                $implementedInterfaces = array();
+                foreach($node->implements as $implementsNode) {
+                    $interface = array(
+                        'name' => array(
+                            'fqn' => $implementsNode->toString(),
+                            'parts' => $implementsNode->parts
+                        )
+                    );
+                    $implementedInterfaces[] = $interface;
+                }
+                $implementedInterfaces = empty($implementedInterfaces) ? null : $implementedInterfaces;
+            } else {
+                $implementedInterfaces = null;
             }
-            $implementedInterfaces = empty($implementedInterfaces) ? null : $implementedInterfaces;
 
             $startLine = $node->getAttribute('startLine');
             $endLine = $node->getAttribute('endLine');

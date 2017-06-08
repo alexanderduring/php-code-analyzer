@@ -2,11 +2,11 @@
 
 namespace Example\House;
 
-class House
+class House extends AbstractHouse
 {
     public function __construct()
     {
-        echo "This is a house!";
+        echo "This is a house " . parent::LOCATION;
     }
 
 

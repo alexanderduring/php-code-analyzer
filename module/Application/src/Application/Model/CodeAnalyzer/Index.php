@@ -24,7 +24,9 @@ class Index
     const USAGE_TYPE_DECLARATION = 'type-declaration';
     const USAGE_USE = 'use';
 
+    const NOTICE_CONST_FETCH_WITH_VARIABLE = 'const-fetch-with-variable';
     const NOTICE_NEW_WITH_VARIABLE = 'new-with-variable';
+    const NOTICE_STATC_CALL_WITH_VARIABLE = 'static-call-with-variable';
     const NOTICE_UNKNOWN_NEW = 'unknown-new';
     const NOTICE_UNKNOWN_USE = 'unknown-use';
 
@@ -218,9 +220,55 @@ class Index
 
 
 
-    public function addStaticCall($classFqn, $methodName, $context, $startLine, $endLine)
+    public function addConstantFetchWithSelf($constantName, $context, $startLine, $endLine)
+    {
+        $classFqn = $context;
+        $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $this->filename, $startLine, $endLine);
+    }
+
+
+
+    /**
+     * @param string $variableName
+     * @param string $context
+     * @param integer $startLine
+     * @param integer $endLine
+     */
+    public function addConstantFetchWithVariable($variableName, $context, $startLine, $endLine)
+    {
+        $notice = array(
+            'type' => self::NOTICE_CONST_FETCH_WITH_VARIABLE,
+            'variable' => $variableName
+        );
+
+        $this->addNotice($notice, $context, $startLine, $endLine);
+    }
+
+
+
+    public function addStaticCall($classFqn, $methodName, $args, $context, $startLine, $endLine)
     {
         $this->addUsage(self::USAGE_STATIC_CALL, $classFqn, $context, $this->filename, $startLine, $endLine);
+    }
+
+
+
+    /**
+     * @param string $variableName
+     * @param string $methodName
+     * @param array $args
+     * @param string $context
+     * @param integer $startLine
+     * @param integer $endLine
+     */
+    public function addStaticCallWithVariable($variableName, $methodName, $args, $context, $startLine, $endLine)
+    {
+        $notice = array(
+            'type' => self::NOTICE_STATC_CALL_WITH_VARIABLE,
+            'variable' => $variableName
+        );
+
+        $this->addNotice($notice, $context, $startLine, $endLine);
     }
 
 
