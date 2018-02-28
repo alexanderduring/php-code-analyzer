@@ -151,6 +151,16 @@ return array(
                         'action'     => 'getNamespaces'
                     )
                 )
+            ),
+            'get-classes' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/get-classes',
+                    'defaults' => array(
+                        'controller' => Application\Controller\IndexController::class,
+                        'action'     => 'getClasses'
+                    )
+                )
             )
         )
     ),

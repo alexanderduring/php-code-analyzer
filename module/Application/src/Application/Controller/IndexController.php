@@ -5,7 +5,6 @@ namespace Application\Controller;
 use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
@@ -149,6 +148,28 @@ class IndexController extends AbstractActionController
         $namespaces = $foundEntries[0];
 
         $jsonModel = new JsonModel($namespaces->toArray());
+
+        return $jsonModel;
+    }
+
+
+
+    public function getClassesAction()
+    {
+        // Setup Ember Db
+        $documentManager = new DocumentManager();
+        $documentManager->setDatabasePath('data/results');
+
+        $classes = $documentManager->find('classes');
+
+        $nodes = [];
+        foreach($classes as $class) {
+            $nodes[] = [
+                'id' => $class->get('name.fqn')
+            ];
+        }
+
+        $jsonModel = new JsonModel($nodes);
 
         return $jsonModel;
     }
