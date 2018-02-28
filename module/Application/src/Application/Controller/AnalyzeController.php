@@ -145,15 +145,18 @@ class AnalyzeController extends AbstractActionController
         echo "Found instantiations:\n---------------------\n";
 
         foreach ($usages as $class => $usages) {
-            echo "Instantiations of " . $class . ":\n";
 
-            foreach ($usages['new'] as $instantiation) {
-                $text = "  in " . $instantiation['context'];
-                $text .= " (file: " . $instantiation['file'] . ", line: " . $instantiation['line'] .")\n";
-                echo $text;
+            if (array_key_exists('new', $usages)) {
+                echo "Instantiations of " . $class . ":\n";
+
+                foreach ($usages['new'] as $instantiation) {
+                    $text = "  in " . $instantiation['context'];
+                    $text .= " (file: " . $instantiation['file'] . ", line: " . $instantiation['startLine'] .")\n";
+                    echo $text;
+                }
+
+                echo "\n";
             }
-
-            echo "\n";
         }
 
         echo "\n";
