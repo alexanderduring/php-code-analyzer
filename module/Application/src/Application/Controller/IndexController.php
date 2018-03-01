@@ -164,8 +164,15 @@ class IndexController extends AbstractActionController
 
         $nodes = [];
         foreach($classes as $class) {
+            $fqn = $class->get('name.fqn');
+            $fqnParts = $class->get('name.parts');
+            $shortName = array_values(array_slice($fqnParts, -1))[0];
+            $group = $fqnParts[0];
+
             $nodes[] = [
-                'id' => $class->get('name.fqn')
+                'id' => $fqn,
+                'shortName' => $shortName,
+                'group' => $group
             ];
         }
 
