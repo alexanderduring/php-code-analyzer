@@ -102,6 +102,11 @@ class IndexController extends AbstractActionController
     }
 
 
+    public function fdgAction()
+    {
+    }
+
+
 
     public function getDataAction()
     {
@@ -162,7 +167,9 @@ class IndexController extends AbstractActionController
 
         $classes = $documentManager->find('classes');
 
+        // Add found classes
         $nodes = [];
+        $classIndex = []; // To check fast, if a class exists as node
         foreach($classes as $class) {
             $fqn = $class->get('name.fqn');
             $fqnParts = $class->get('name.parts');
@@ -174,9 +181,54 @@ class IndexController extends AbstractActionController
                 'shortName' => $shortName,
                 'group' => $group
             ];
+
+            $classIndex[$fqn] = true;
         }
 
-        $jsonModel = new JsonModel($nodes);
+        // Add found dependencies
+        $links = [];
+        foreach($classes as $class) {
+            $fqn = $class->get('name.fqn');
+
+            // Usages 'new'
+            $usages = $class->get('usages.new');
+            foreach($usages as $usageNew)
+            $links[] = [
+                'source' => $usageNew['context'],
+                'target' => $fqn,
+                'value' => 1
+            ];
+
+            // Extends
+            if ($class->has('extends.name.fqn')) {
+                $parentFqn = $class->get('extends.name.fqn');
+                $links[] = [
+                    'source' => $fqn,
+                    'target' => $parentFqn,
+                    'value' => 2
+                ];
+
+                // Check if parent node exists
+                if (!array_key_exists($parentFqn, $classIndex)) {
+                    // Add node
+                    $nodes[] = [
+                        'id' => $parentFqn,
+                        'shortName' => $parentFqn,
+                        'group' => 'External'
+                    ];
+                    // Add class to class index
+                    $classIndex[$parentFqn] = true;
+                }
+            }
+        }
+
+
+        $data = [
+            'nodes' => $nodes,
+            'links' => $links
+        ];
+
+        $jsonModel = new JsonModel($data);
 
         return $jsonModel;
     }

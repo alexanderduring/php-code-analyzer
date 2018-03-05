@@ -142,6 +142,16 @@ return array(
                     )
                 )
             ),
+            'force-directed-graph' => array(
+                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'options' => array(
+                    'route'    => '/fdg',
+                    'defaults' => array(
+                        'controller' => Application\Controller\IndexController::class,
+                        'action'     => 'fdg'
+                    )
+                )
+            ),
             'get-namespaces' => array(
                 'type' => Zend\Mvc\Router\Http\Segment::class,
                 'options' => array(
@@ -191,7 +201,8 @@ return array(
     'menu' => array(
         'Menü' => array(
             'Home' => 'home',
-            'Classes' => 'classes'
+            'Classes' => 'classes',
+            'Dependency' => 'force-directed-graph'
         ),
         'D3.js Tutorial' => array(
             'Bar Chart I (div)' => 'd3-bar-chart-one',
