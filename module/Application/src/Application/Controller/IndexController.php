@@ -191,13 +191,18 @@ class IndexController extends AbstractActionController
             $fqn = $class->get('name.fqn');
 
             // Usages 'new'
-            $usages = $class->get('usages.new');
-            foreach($usages as $usageNew)
-            $links[] = [
-                'source' => $usageNew['context'],
-                'target' => $fqn,
-                'value' => 1
-            ];
+            if ($class->has('usages.new')) {
+                $usages = $class->get('usages.new');
+                foreach($usages as $usageNew) {
+                    $clientFqn = $usageNew['context'];
+                    $links[] = [
+                        'source' => $clientFqn,
+                        'target' => $fqn,
+                        'value' => 1
+                    ];
+                    $this->ensureNodeExists($clientFqn, $classIndex, $nodes);
+                }
+            }
 
             // Extends
             if ($class->has('extends.name.fqn')) {
@@ -208,16 +213,20 @@ class IndexController extends AbstractActionController
                     'value' => 2
                 ];
 
-                // Check if parent node exists
-                if (!array_key_exists($parentFqn, $classIndex)) {
-                    // Add node
-                    $nodes[] = [
-                        'id' => $parentFqn,
-                        'shortName' => $parentFqn,
-                        'group' => 'External'
+                $this->ensureNodeExists($parentFqn, $classIndex, $nodes);
+            }
+
+            // Type Hints
+            if ($class->has('usages.type-declaration')) {
+                $typeHints = $class->get('usages.type-declaration');
+                foreach($typeHints as $typeHint) {
+                    $clientFqn = $typeHint['context'];
+                    $links[] = [
+                        'source' => $clientFqn,
+                        'target' => $fqn,
+                        'value' => 1
                     ];
-                    // Add class to class index
-                    $classIndex[$parentFqn] = true;
+                    $this->ensureNodeExists($clientFqn, $classIndex, $nodes);
                 }
             }
         }
@@ -231,5 +240,21 @@ class IndexController extends AbstractActionController
         $jsonModel = new JsonModel($data);
 
         return $jsonModel;
+    }
+
+
+
+    private function ensureNodeExists($fqn, &$classIndex, &$nodes)
+    {
+        if (!array_key_exists($fqn, $classIndex)) {
+            // Add node
+            $nodes[] = [
+                'id' => $fqn,
+                'shortName' => $fqn,
+                'group' => 'External'
+            ];
+            // Add class to class index
+            $classIndex[$fqn] = true;
+        }
     }
 }
