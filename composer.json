@@ -1,12 +1,23 @@
 {
     "name": "PhpCodeAnalyzer",
     "description": "",
-    "license": "GNU General Public License v3.0",
-    "keywords": [
-    ],
+    "keywords": [],
+    "license": "GPL-3.0-only",
     "homepage": "https://github.com/alexanderduring/php-code-analyzer",
+    "authors": [
+        {
+            "name": "Alexander During",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Application\\": "module/Application/src/Application"
+        }
+    },
     "require": {
-        "php": ">=5.3.23",
+        "php": ">=7.0",
+        "phpunit/phpunit": "6.*",
         "zendframework/zendframework": "2.4.10",
         "nikic/php-parser": "2.1.0",
         "alexanderduring/ember-db": "dev-master"
