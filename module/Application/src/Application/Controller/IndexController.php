@@ -2,6 +2,7 @@
 
 namespace Application\Controller;
 
+use Application\Model\ClassName\ClassName;
 use EmberDb\DocumentManager;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -161,72 +162,62 @@ class IndexController extends AbstractActionController
 
     public function getClassesAction()
     {
+        $filters = [];
+
         // Setup Ember Db
         $documentManager = new DocumentManager();
         $documentManager->setDatabasePath('data/results');
 
         $classes = $documentManager->find('classes');
 
-        // Add found classes
         $nodes = [];
+        $links = [];
         $classIndex = []; // To check fast, if a class exists as node
+
+        // Add found classes
         foreach($classes as $class) {
             $fqn = $class->get('name.fqn');
-            $fqnParts = $class->get('name.parts');
-            $shortName = array_values(array_slice($fqnParts, -1))[0];
-            $group = $fqnParts[0];
-
-            $nodes[] = [
-                'id' => $fqn,
-                'shortName' => $shortName,
-                'group' => $group
-            ];
-
-            $classIndex[$fqn] = true;
+            if ($this->passesNamespaceFilters($fqn, $filters)) {
+                $fqnParts = $class->get('name.parts');
+                $group = $fqnParts[0];
+                $this->addNode($fqn, $group, $classIndex, $nodes);
+            }
         }
 
         // Add found dependencies
-        $links = [];
         foreach($classes as $class) {
             $fqn = $class->get('name.fqn');
 
-            // Usages 'new'
-            if ($class->has('usages.new')) {
-                $usages = $class->get('usages.new');
-                foreach($usages as $usageNew) {
-                    $clientFqn = $usageNew['context'];
-                    $links[] = [
-                        'source' => $clientFqn,
-                        'target' => $fqn,
-                        'value' => 1
-                    ];
-                    $this->ensureNodeExists($clientFqn, $classIndex, $nodes);
+            if ($this->passesNamespaceFilters($fqn, $filters)) {
+                // Usages 'new'
+                if ($class->has('usages.new')) {
+                    $usages = $class->get('usages.new');
+                    foreach($usages as $usageNew) {
+                        $clientFqn = $usageNew['context'];
+                        if ($this->passesNamespaceFilters($clientFqn, $filters)) {
+                            $this->addLink($clientFqn, $fqn, 1, $links);
+                            $this->addNode($clientFqn, 'New', $classIndex, $nodes);
+                        }
+                    }
                 }
-            }
 
-            // Extends
-            if ($class->has('extends.name.fqn')) {
-                $parentFqn = $class->get('extends.name.fqn');
-                $links[] = [
-                    'source' => $fqn,
-                    'target' => $parentFqn,
-                    'value' => 2
-                ];
+                // Extends
+                if ($class->has('extends.name.fqn')) {
+                    $parentFqn = $class->get('extends.name.fqn');
+                    if ($this->passesNamespaceFilters($parentFqn, $filters)) {
+                        $this->addLink($fqn, $parentFqn, 5, $links);
+                        $this->addNode($parentFqn, 'External', $classIndex, $nodes);
+                    }
+                }
 
-                $this->ensureNodeExists($parentFqn, $classIndex, $nodes);
-            }
-
-            // Type Hints
-            if ($class->has('usages.type-declaration')) {
-                $typeHints = $class->get('usages.type-declaration');
-                foreach($typeHints as $typeHint) {
-                    $clientFqn = $typeHint['context'];
-                    $links[] = [
-                        'source' => $clientFqn,
-                        'target' => $fqn,
-                        'value' => 1
-                    ];
-                    $this->ensureNodeExists($clientFqn, $classIndex, $nodes);
+                // Type Hints
+                if ($class->has('usages.type-declaration')) {
+                    $typeHints = $class->get('usages.type-declaration');
+                    foreach($typeHints as $typeHint) {
+                        $clientFqn = $typeHint['context'];
+                        $this->addLink($clientFqn, $fqn, 1, $links);
+                        $this->addNode($clientFqn, 'External', $classIndex, $nodes);
+                    }
                 }
             }
         }
@@ -244,17 +235,49 @@ class IndexController extends AbstractActionController
 
 
 
-    private function ensureNodeExists($fqn, &$classIndex, &$nodes)
+    private function addNode(string $fqn, string $group, array &$classIndex, array &$nodes)
     {
         if (!array_key_exists($fqn, $classIndex)) {
+
             // Add node
             $nodes[] = [
                 'id' => $fqn,
                 'shortName' => $fqn,
-                'group' => 'External'
+                'group' => $group
             ];
+
             // Add class to class index
             $classIndex[$fqn] = true;
         }
+    }
+
+
+
+    private function addLink(string $sourceFqn, string $targetFqn, int $value, array &$links)
+    {
+        $links[] = [
+            'source' => $sourceFqn,
+            'target' => $targetFqn,
+            'value' => $value
+        ];
+    }
+
+
+
+    private function passesNamespaceFilters($fqn, $filters)
+    {
+        $className = new ClassName($fqn);
+
+        $matches = false;
+        foreach($filters as $filter) {
+            if ($className->matchesNamespaceFilter($filter)) {
+                $matches = true;
+                break;
+            }
+        }
+
+        $passes = !$matches;
+
+        return $passes;
     }
 }
