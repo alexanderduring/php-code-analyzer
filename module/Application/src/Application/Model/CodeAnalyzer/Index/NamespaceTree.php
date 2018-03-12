@@ -14,7 +14,7 @@ class NamespaceTree
     }
 
 
-    /**
+    /*
      * This is a recursive method of building a namespace tree,
      * by first building all its subnamespace trees and then
      * putting them together.
@@ -60,52 +60,16 @@ class NamespaceTree
 
 
 
-    public function addClass($class)
+    public function addClass(array $namespace)
     {
-        $nameParts = $class->get('name.parts');
-        $fqn = $class->get('name.fqn');
-        $shortClassName = $nameParts[count($nameParts) - 1];
-        $numLines = $class->get('endLine') - $class->get('startLine');
-
-        // get namespace
-        $namespaceParts = $nameParts;
-        array_splice($namespaceParts, -1);
-        array_unshift($namespaceParts, '\\');
-
         // Add class to namespace
         $subTree = &$this->namespaceTree;
-        foreach ($namespaceParts as $namespacePart) {
-            if (!array_key_exists($namespacePart, $subTree)) {
-                $subTree[$namespacePart] = array(
-                    'name' => $namespacePart,
-                    'children' => array()
-                );
+        foreach ($namespace as $level) {
+            if (!array_key_exists($level, $subTree)) {
+                $subTree[$level] = [];
             }
-            $subTree = &$subTree[$namespacePart]['children'];
+            $subTree = &$subTree[$level];
         }
-
-        $subTree[] = array(
-            'name' => array(
-                'short' => $shortClassName,
-                'fqn' => $fqn
-            ),
-            'numClasses' => 1,
-            'numLines' => $numLines
-        );
-    }
-
-
-
-    private function namespaceExists($namespaceName, $children)
-    {
-        $exists = false;
-        foreach ($children as $child) {
-            if ($child['name'] === $namespaceName) {
-                $exists = true;
-            }
-        }
-
-        return $exists;
     }
 
 

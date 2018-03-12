@@ -2,6 +2,7 @@
 
 namespace Application\Controller;
 
+use Application\Model\ClassName\ClassName;
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
 use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\Index\NamespaceTree;
@@ -83,7 +84,8 @@ class AnalyzeController extends AbstractActionController
         $classes = $documentManager->find('classes');
         $namespaceTree = new NamespaceTree();
         foreach ($classes as $class) {
-            $namespaceTree->addClass($class);
+            $className = new ClassName($class->get('name.fqn'));
+            $namespaceTree->addClass($className->getNamespaceAsArray());
         }
         $documentManager->remove('namespaceTree');
         $documentManager->insert('namespaceTree', $namespaceTree->toArray());

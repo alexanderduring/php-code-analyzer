@@ -55,6 +55,13 @@ class ClassName
 
 
 
+    public function getNamespaceAsArray(): array
+    {
+        return $this->namespaceParts;
+    }
+
+
+
     /*
      * Filter syntax:
      *
