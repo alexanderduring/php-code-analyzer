@@ -179,8 +179,9 @@ class IndexController extends AbstractActionController
             $fqn = $class->get('name.fqn');
             if ($this->passesNamespaceFilters($fqn, $filters)) {
                 $fqnParts = $class->get('name.parts');
+                $type = $class->get('type');
                 $group = $fqnParts[0];
-                $this->addNode($fqn, $group, $classIndex, $nodes);
+                $this->addNode($fqn, $type, $group, $classIndex, $nodes);
             }
         }
 
@@ -196,7 +197,7 @@ class IndexController extends AbstractActionController
                         $clientFqn = $usageNew['context'];
                         if ($this->passesNamespaceFilters($clientFqn, $filters)) {
                             $this->addLink($clientFqn, $fqn, 1, $links);
-                            $this->addNode($clientFqn, 'New', $classIndex, $nodes);
+                            $this->addNode($clientFqn, 'unknown', 'New', $classIndex, $nodes);
                         }
                     }
                 }
@@ -206,7 +207,7 @@ class IndexController extends AbstractActionController
                     $parentFqn = $class->get('extends.name.fqn');
                     if ($this->passesNamespaceFilters($parentFqn, $filters)) {
                         $this->addLink($fqn, $parentFqn, 5, $links);
-                        $this->addNode($parentFqn, 'External', $classIndex, $nodes);
+                        $this->addNode($parentFqn, 'unknown', 'External', $classIndex, $nodes);
                     }
                 }
 
@@ -216,7 +217,7 @@ class IndexController extends AbstractActionController
                     foreach($typeHints as $typeHint) {
                         $clientFqn = $typeHint['context'];
                         $this->addLink($clientFqn, $fqn, 1, $links);
-                        $this->addNode($clientFqn, 'External', $classIndex, $nodes);
+                        $this->addNode($clientFqn, 'unknown', 'External', $classIndex, $nodes);
                     }
                 }
             }
@@ -235,7 +236,7 @@ class IndexController extends AbstractActionController
 
 
 
-    private function addNode(string $fqn, string $group, array &$classIndex, array &$nodes)
+    private function addNode(string $fqn, string $type, string $group, array &$classIndex, array &$nodes)
     {
         if (!array_key_exists($fqn, $classIndex)) {
 
@@ -243,6 +244,7 @@ class IndexController extends AbstractActionController
             $nodes[] = [
                 'id' => $fqn,
                 'shortName' => $fqn,
+                'type' => str_replace(' ', '-', $type),
                 'group' => $group
             ];
 
