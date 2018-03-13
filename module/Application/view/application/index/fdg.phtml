@@ -49,13 +49,7 @@ $this->inlineScript()->appendScript(<<<JS
           .enter().append("g")
             .attr("class", function(d) { return d.type; });
 
-        nodesGroup.selectAll(".class")
-          .append("circle")
-            .attr("r", 5)
-            .attr("stroke", "#fff")
-            .attr("fill", function(d) { return color(d.group); });
-
-        nodesGroup.selectAll(".final-class")
+        nodesGroup.selectAll(".class, .final-class, .unknown")
           .append("circle")
             .attr("r", 5)
             .attr("stroke", "#fff")
