@@ -22,9 +22,13 @@ $this->inlineScript()->appendScript(<<<JS
     // Force Directed Graph
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
+    var forceManyBody = d3.forceManyBody()
+        .distanceMax(200)
+        .strength(-50);
+
     var simulation = d3.forceSimulation()
       .force("link", d3.forceLink().id(function(d) { return d.id; }))
-      .force("charge", d3.forceManyBody())
+      .force("charge", forceManyBody)
       .force("center", d3.forceCenter(width / 2, height / 2));
 
     var drawing = svg.append("g")
@@ -52,13 +56,14 @@ $this->inlineScript()->appendScript(<<<JS
         nodesGroup.selectAll(".class, .final-class, .unknown")
           .append("circle")
             .attr("r", 5)
-            .attr("stroke", "#fff")
+            .attr("stroke", function(d) { return color(d.group); })
             .attr("fill", function(d) { return color(d.group); });
 
         nodesGroup.selectAll(".abstract-class")
           .append("circle")
-            .attr("r", 4)
+            .attr("r", 5)
             .attr("stroke", function(d) { return color(d.group); })
+            .attr("stroke-width", 1)
             .attr("fill", "#fff");
 
         nodesGroup.selectAll(".interface")
@@ -99,7 +104,7 @@ $this->inlineScript()->appendScript(<<<JS
     });
 
     function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        if (!d3.event.active) simulation.alphaTarget(0.9).restart();
         d.fx = d.x;
         d.fy = d.y;
     }
@@ -139,7 +144,7 @@ JS
     <div class="row justify-content-center">
         <div class="col-sm-12">
             <div class="chart">
-                <svg width="1200" height="600" viewBox="0 0 1200 600"></svg>
+                <svg width="1280" height="720" viewBox="0 0 1280 720"></svg>
                 <p>Use the mouse to drag the nodes or the move the entire graph. Use the mouse wheel to zoom in or out.</p>
             </div>
         </div>
