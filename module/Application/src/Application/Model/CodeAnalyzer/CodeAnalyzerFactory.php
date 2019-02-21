@@ -4,19 +4,15 @@ namespace Application\Model\CodeAnalyzer;
 
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
+use Interop\Container\ContainerInterface;
 use PhpParser\ParserFactory;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class CodeAnalyzerFactory implements FactoryInterface
 {
-    /**
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return CodeAnalyzer
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $serviceLocator, $requestedName, array $options = null)
     {
         // Create CodeAnalyzer
         $codeAnalyzer = new CodeAnalyzer();
@@ -39,11 +35,7 @@ class CodeAnalyzerFactory implements FactoryInterface
 
 
 
-    /**
-     * @param Index $index
-     * @return NodeTraverser
-     */
-    private function buildTraverser(Index $index)
+    private function buildTraverser(Index $index): NodeTraverser
     {
         $traverser = new NodeTraverser();
 

@@ -2,14 +2,14 @@
 
 namespace Application\View\Helper;
 
-use Zend\Mvc\Router\RouteMatch;
+use Zend\Router\RouteMatch;
 use Zend\View\Helper\AbstractHelper as AbstractHelper;
 
 class Menu extends AbstractHelper
 {
     const SEPARATOR_ROUTE = '-----';
 
-    /** @var  \Zend\Mvc\Router\RouteMatch */
+    /** @var RouteMatch */
     private $routeMatch;
 
     /** @var array */
@@ -17,9 +17,6 @@ class Menu extends AbstractHelper
 
 
 
-    /**
-     * @param \Zend\Mvc\Router\RouteMatch $routeMatch
-     */
     public function injectRouteMatch(RouteMatch $routeMatch)
     {
         $this->routeMatch = $routeMatch;

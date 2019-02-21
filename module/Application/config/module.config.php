@@ -16,7 +16,7 @@ return array(
     ),
     'view_helpers' => array(
         'factories' => array(
-            'Menu' => Application\View\Helper\MenuFactory::class
+            'menu' => Application\View\Helper\MenuFactory::class
         )
     ),
     'view_manager' => array(
@@ -43,7 +43,7 @@ return array(
     'router' => array(
         'routes' => array(
             'home' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
@@ -53,7 +53,7 @@ return array(
                 )
             ),
             'd3-bar-chart-one' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-bar-chart-one',
                     'defaults' => array(
@@ -63,7 +63,7 @@ return array(
                 )
             ),
             'd3-bar-chart-two' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-bar-chart-two',
                     'defaults' => array(
@@ -73,7 +73,7 @@ return array(
                 )
             ),
             'd3-line-chart' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-line-chart',
                     'defaults' => array(
@@ -83,7 +83,7 @@ return array(
                 )
             ),
             'd3-line-chart-data' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-line-chart-data',
                     'defaults' => array(
@@ -93,7 +93,7 @@ return array(
                 )
             ),
             'd3-doughnut-chart' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-doughnut-chart',
                     'defaults' => array(
@@ -103,7 +103,7 @@ return array(
                 )
             ),
             'd3-partition-chart' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-partition-chart',
                     'defaults' => array(
@@ -113,7 +113,7 @@ return array(
                 )
             ),
             'd3-sunburst-chart' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-sunburst-chart',
                     'defaults' => array(
@@ -123,7 +123,7 @@ return array(
                 )
             ),
             'd3-get-data' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/d3-get-data',
                     'defaults' => array(
@@ -133,7 +133,7 @@ return array(
                 )
             ),
             'classes' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/classes[/:fqn]',
                     'defaults' => array(
@@ -143,7 +143,7 @@ return array(
                 )
             ),
             'force-directed-graph' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/fdg',
                     'defaults' => array(
@@ -153,7 +153,7 @@ return array(
                 )
             ),
             'get-namespaces' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/get-namespaces',
                     'defaults' => array(
@@ -163,7 +163,7 @@ return array(
                 )
             ),
             'get-classes' => array(
-                'type' => Zend\Mvc\Router\Http\Segment::class,
+                'type' => Zend\Router\Http\Segment::class,
                 'options' => array(
                     'route'    => '/get-classes',
                     'defaults' => array(

@@ -3,33 +3,17 @@
 namespace Application\Controller;
 
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class AnalyzeControllerFactory implements FactoryInterface
 {
-    /** @var \Zend\Mvc\Controller\ControllerManager */
-    private $controllerManager;
-
-    /** @var \Zend\ServiceManager\ServiceLocator */
-    private $serviceLocator;
-
-
-
-    /**
-     * @param \Zend\ServiceManager\ServiceLocatorInterface $serviceLocator
-     * @return \Application\Controller\AnalyzeController
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $serviceLocator, $requestedName, array $options = null)
     {
-        $this->controllerManager = $serviceLocator;
-        $this->serviceLocator = $serviceLocator->getServiceLocator();
-
-        // Manufacture AnalyzeController
         $analyzeController = new AnalyzeController();
 
         // Inject CodeAnalyzer
-        $codeAnalyzer = $this->serviceLocator->get(CodeAnalyzer::class);
+        $codeAnalyzer = $serviceLocator->get(CodeAnalyzer::class);
         $analyzeController->injectCodeAnalyzer($codeAnalyzer);
 
         return $analyzeController;

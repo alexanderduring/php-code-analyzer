@@ -2,15 +2,13 @@
 
 namespace Application\View\Helper;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class MenuFactory implements FactoryInterface
 {
-    public function createService(ServiceLocatorInterface $helperPluginManager)
+    public function __invoke(ContainerInterface $serviceLocator, $requestedName, array $options = null)
     {
-        $serviceLocator = $helperPluginManager->getServiceLocator();
-
         $menu = new Menu();
 
         // Inject RouteMatch

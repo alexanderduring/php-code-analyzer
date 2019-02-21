@@ -18,7 +18,7 @@
     "require": {
         "php": ">=7.0",
         "phpunit/phpunit": "6.*",
-        "zendframework/zendframework": "2.4.10",
+        "zendframework/zendframework": "^3.0",
         "nikic/php-parser": "4.2.1",
         "alexanderduring/ember-db": "dev-master"
     }

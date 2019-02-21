@@ -2,6 +2,9 @@
 
 return array(
     'modules' => array(
+        'Zend\Router',
+        'Zend\Validator',
+        'Zend\Mvc\Console',
         'Application'
     ),
     'module_listener_options' => array(
