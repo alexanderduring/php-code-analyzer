@@ -21,5 +21,8 @@
         "zendframework/zendframework": "^3.0",
         "nikic/php-parser": "4.2.1",
         "alexanderduring/ember-db": "dev-master"
+    },
+    "require-dev": {
+        "zendframework/zend-component-installer": "^1.1"
     }
 }
