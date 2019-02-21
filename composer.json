@@ -1,7 +1,7 @@
 {
-    "name": "PhpCodeAnalyzer",
+    "name": "alexanderduring/php-code-analyzer",
     "description": "",
-    "keywords": [],
+    "keywords": ["analyzing"],
     "license": "GPL-3.0-only",
     "homepage": "https://github.com/alexanderduring/php-code-analyzer",
     "authors": [
