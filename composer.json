@@ -12,7 +12,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Application\\": "module/Application/src/Application"
+            "Application\\": "module/Application/src"
         }
     },
     "require": {
