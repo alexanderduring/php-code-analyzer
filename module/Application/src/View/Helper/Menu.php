@@ -24,9 +24,6 @@ class Menu extends AbstractHelper
 
 
 
-    /**
-     * @param array $config
-     */
     public function injectConfig(array $config)
     {
         $this->config = $config;
@@ -34,25 +31,21 @@ class Menu extends AbstractHelper
 
 
 
-    /**
-     * @return \Application\View\Helper\Menu
-     */
-    public function __invoke()
+    public function __invoke(): Menu
     {
         return $this;
     }
 
 
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
+        $menu = '';
         $variables = array(
             'config' => $this->config,
             'matchedRoute' => $this->routeMatch->getMatchedRouteName()
         );
+
         try {
             $menu = $this->view->render('application/viewhelper/menu', $variables);
         } catch (\Exception $e) {

@@ -25,7 +25,7 @@ class AnalyzeController extends AbstractActionController
 
     public function runAction()
     {
-        $path = $this->getRequest()->getParam('path');
+        $path = (string) $this->getRequest()->getParam('path');
         $ignores = $this->splitCommaSeparatedValue($this->getRequest()->getParam('ignore'));
 
         if (file_exists($path)) {
@@ -200,16 +200,10 @@ class AnalyzeController extends AbstractActionController
 
 
 
-    /**
-     * Splits a value flag string into an array with real entries.
-     *
-     * @param string|null $value
-     * @return array
-     */
-    private function splitCommaSeparatedValue($value)
+    private function splitCommaSeparatedValue(string $value = null): array
     {
         if (is_null($value)) {
-            $entries = array();
+            $entries = [];
         } else {
             $valueString = (string) $value;
             $cleanedString = str_replace(' ', '', $valueString);
@@ -217,7 +211,7 @@ class AnalyzeController extends AbstractActionController
             if (strlen($cleanedString) > 0) {
                 $entries = explode(',', $cleanedString);
             } else {
-                $entries = array();
+                $entries = [];
             }
         }
 

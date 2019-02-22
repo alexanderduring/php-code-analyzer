@@ -15,14 +15,10 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
     /** @var Index */
     private $index;
 
-    private $context = array('global');
+    private $context = ['global'];
 
 
 
-    /**
-     * @param Index $index
-     * @return void
-     */
     public function injectIndex(Index $index)
     {
         $this->index = $index;
@@ -30,20 +26,12 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * @param array $nodes
-     * @return void
-     */
     public function beforeTraverse(array $nodes)
     {
     }
 
 
 
-    /**
-     * @param \PhpParser\Node $node
-     * @return void
-     */
     public function enterNode(Node $node)
     {
         if ($node->getType() == 'Stmt_Class') {
@@ -103,10 +91,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
     }
 
 
-    /**
-     * @param Node $node
-     * @return void
-     */
+
     public function leaveNode(Node $node)
     {
         if (in_array($node->getType(), array('Stmt_Class', 'Stmt_Interface'))) {
@@ -116,21 +101,12 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * @param array $nodes
-     * @return void
-     */
     public function afterTraverse(array $nodes)
     {
-
     }
 
 
 
-    /**
-     * @param Node $newNode
-     * @return void
-     */
     private function analyzeInstantiation(Node $newNode)
     {
         $startLine = $newNode->getAttribute('startLine');
@@ -275,8 +251,6 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                 echo 'Unknown type of const fetch: '. $classNode->getType() . PHP_EOL;
                 var_export($classConstFetch);
         }
-
-
     }
 
 
@@ -310,10 +284,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * @return string
-     */
-    private function getContext()
+    private function getContext(): string
     {
         return $this->context[0];
     }

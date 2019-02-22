@@ -33,9 +33,6 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @param \PhpParser\Parser $parser
-     */
     public function injectParser(Parser $parser)
     {
         $this->parser = $parser;
@@ -50,9 +47,6 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @param \Application\Model\CodeAnalyzer\Index $index
-     */
     public function injectIndex(Index $index)
     {
         $this->index = $index;
@@ -60,9 +54,6 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @return \Application\Model\CodeAnalyzer\Index
-     */
     public function getIndex()
     {
         return $this->index;
@@ -70,26 +61,25 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @param string $path
-     */
-    public function process($path, $ignores)
+    public function process(string $path, array $ignores)
     {
         $realPath = realpath($path);
 
-        if (is_dir($realPath)) {
-            $this->processDirectory($realPath, $ignores);
+        if (false === $realPath) {
+            echo "Could not find path $path.\n";
         } else {
-            $this->processFile($realPath);
+            if (is_dir($realPath)) {
+                $this->processDirectory($realPath, $ignores);
+            } else {
+                $this->processFile($realPath);
+            }
         }
+
     }
 
 
 
-    /**
-     * @param string $path
-     */
-    private function processFile($path)
+    private function processFile(string $path)
     {
         $file = new SplFileInfo($path);
         $this->foo($file, $path);
@@ -97,10 +87,7 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @param string $path
-     */
-    private function processDirectory($path, $ignores)
+    private function processDirectory(string $path, array $ignores)
     {
         // iterate over all .php files in the directory
         $directoryIterator = new RecursiveDirectoryIterator($path);
@@ -118,23 +105,22 @@ class CodeAnalyzer
 
     /**
      * @todo Find a good name for this method
-     * @param SplFileInfo $file
      */
-    private function foo(SplFileInfo $file, $path)
+    private function foo(SplFileInfo $file, string $path)
     {
         $filename = ltrim(str_replace($path, '', $file->getPathName()), '/');
-        $code = file_get_contents($file);
+        $code = file_get_contents((string) $file);
 
-        $this->analyze($filename, $code);
+        if (false === $code) {
+            echo "Could not read file $file.\n";
+        } else {
+            $this->analyze($filename, $code);
+        }
     }
 
 
 
-    /**
-     * @param string $filename
-     * @param string $code
-     */
-    private function analyze($filename, $code)
+    private function analyze(string $filename, string $code)
     {
         try {
             $nodes = $this->parser->parse($code);

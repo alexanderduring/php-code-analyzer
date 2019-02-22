@@ -4,11 +4,11 @@ namespace Application\Model\CodeAnalyzer\Index;
 
 class NamespaceTree
 {
-    private $namespaceTree = array();
+    private $namespaceTree = [];
 
 
 
-    public function toArray()
+    public function toArray(): array
     {
         return $this->namespaceTree;
     }

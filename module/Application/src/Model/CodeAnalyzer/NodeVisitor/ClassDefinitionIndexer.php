@@ -12,14 +12,11 @@ use PhpParser\Node\Stmt\Class_ as StmtClassNode;
  */
 class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 {
-    /** @var \Application\Model\CodeAnalyzer\Index */
+    /** @var Index */
     private $index;
 
 
 
-    /**
-     * @param \Application\Model\CodeAnalyzer\Index $index
-     */
     public function injectIndex(Index $index)
     {
         $this->index = $index;
@@ -27,18 +24,12 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * @param array $nodes
-     */
     public function beforeTraverse(array $nodes)
     {
     }
 
 
 
-    /**
-     * @param \PhpParser\Node $node
-     */
     public function enterNode(Node $node)
     {
         if ($node->getType() == 'Stmt_Class') {
@@ -52,18 +43,12 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * @param \PhpParser\Node $node
-     */
     public function leaveNode(Node $node)
     {
     }
 
 
 
-    /**
-     * @param array $nodes
-     */
     public function afterTraverse(array $nodes)
     {
 
@@ -89,10 +74,6 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * Adds a class to the index.
-     * @param Node $classStatement
-     */
     private function addClassToIndex(Node $classStatement)
     {
         $this->addEntryToIndex($classStatement, 'class');
@@ -100,10 +81,6 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * Adds an abstract class to the index.
-     * @param Node $classStatement
-     */
     private function addAbstractClassToIndex(Node $classStatement)
     {
         $this->addEntryToIndex($classStatement, 'abstract class');
@@ -118,10 +95,6 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * Adds a final class to the index.
-     * @param Node $classStatement
-     */
     private function addFinalClassToIndex(Node $classStatement)
     {
         $this->addEntryToIndex($classStatement, 'final class');
@@ -129,10 +102,6 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * Adds an interface to the index.
-     * @param Node $interfaceStatement
-     */
     private function addInterfaceToIndex(Node $interfaceStatement)
     {
         $this->addEntryToIndex($interfaceStatement, 'interface');
@@ -140,11 +109,7 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 
 
 
-    /**
-     * Adds a class, abstract class or interface to the index.
-     * @param Node $node
-     */
-    private function addEntryToIndex(Node $node, $type)
+    private function addEntryToIndex(Node $node, string $type)
     {
         $startLine = $node->getAttribute('startLine');
         $endLine = $node->getAttribute('endLine');
@@ -167,13 +132,17 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
                 )
             );
         } else {
-            $extendedClass = null;
+            $extendedClass = [];
         }
 
         // Implemented interfaces
         if (property_exists($node, 'implements')) {
+
+            /** @var Node\Name[] $implementsNodes */
+            $implementsNodes = $node->implements;
+
             $implementedInterfaces = array();
-            foreach($node->implements as $implementsNode) {
+            foreach($implementsNodes as $implementsNode) {
                 $interface = array(
                     'name' => array(
                         'fqn' => $implementsNode->toString(),
@@ -182,9 +151,8 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
                 );
                 $implementedInterfaces[] = $interface;
             }
-            $implementedInterfaces = empty($implementedInterfaces) ? null : $implementedInterfaces;
         } else {
-            $implementedInterfaces = null;
+            $implementedInterfaces = [];
         }
 
         $this->index->addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $this->filename, $startLine, $endLine);

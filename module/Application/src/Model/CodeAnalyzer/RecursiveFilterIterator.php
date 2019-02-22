@@ -11,14 +11,14 @@ class RecursiveFilterIterator extends SplRecursiveFilterIterator
 
 
 
-    public function setIgnores($ignores)
+    public function setIgnores(array $ignores)
     {
         $this->ignores = $ignores;
     }
 
 
 
-    public function accept()
+    public function accept(): bool
     {
         $matchesIgnores = false;
         $filePath = $this->current()->getPathname();
