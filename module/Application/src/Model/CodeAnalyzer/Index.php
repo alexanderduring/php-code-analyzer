@@ -38,20 +38,7 @@ class Index
         'notices' => array()
     );
 
-    /** @var string */
-    private $filename;
-
     public $foundNodeTypes = array();
-
-
-
-    /**
-     * @param string $filename
-     */
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-    }
 
 
 
@@ -73,7 +60,7 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine)
+    public function addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $filename, $startLine, $endLine)
     {
         $fullyQualifiedName = implode('\\', $nameParts);
 
@@ -86,7 +73,7 @@ class Index
             'type' => $type,
             'extends' => $extendedClass,
             'implements' => $implementedInterfaces,
-            'file' => $this->filename,
+            'file' => $filename,
             'startLine' => $startLine,
             'endLine' => $endLine
         );
@@ -132,9 +119,9 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addInstantiation($fullyQualifiedName, $context, $startLine, $endLine)
+    public function addInstantiation($fullyQualifiedName, $context, $filename, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
+        $this->addUsage(self::USAGE_NEW, $fullyQualifiedName, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -145,14 +132,14 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addInstantiationWithVariable($variableName, $context, $startLine, $endLine)
+    public function addInstantiationWithVariable($variableName, $context, $filename, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_NEW_WITH_VARIABLE,
             'variable' => $variableName
         );
 
-        $this->addNotice($notice, $context, $startLine, $endLine);
+        $this->addNotice($notice, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -163,14 +150,14 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addUnknownInstantiation($nodeType, $context, $startLine, $endLine)
+    public function addUnknownInstantiation($nodeType, $context, $filename, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_UNKNOWN_NEW,
             'nodeType' => $nodeType
         );
 
-        $this->addNotice($notice, $context, $startLine, $endLine);
+        $this->addNotice($notice, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -181,9 +168,9 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addUseStatement($fullyQualifiedName, $context, $startLine, $endLine)
+    public function addUseStatement($fullyQualifiedName, $context, $filename, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
+        $this->addUsage(self::USAGE_USE, $fullyQualifiedName, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -194,36 +181,36 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addUnknownUseStatement($nodeType, $context, $startLine, $endLine)
+    public function addUnknownUseStatement($nodeType, $context, $filename, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_UNKNOWN_USE,
             'nodeType' => $nodeType
         );
 
-        $this->addNotice($notice, $context, $startLine, $endLine);
+        $this->addNotice($notice, $context, $filename, $startLine, $endLine);
     }
 
 
 
-    public function addTypeDeclaration($fullyQualifiedName, $context, $startLine, $endLine)
+    public function addTypeDeclaration($fullyQualifiedName, $context, $filename, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_TYPE_DECLARATION, $fullyQualifiedName, $context, $this->filename, $startLine, $endLine);
+        $this->addUsage(self::USAGE_TYPE_DECLARATION, $fullyQualifiedName, $context, $filename, $startLine, $endLine);
     }
 
 
 
-    public function addConstantFetch($classFqn, $constantName, $context, $startLine, $endLine)
+    public function addConstantFetch($classFqn, $constantName, $context, $filename, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $this->filename, $startLine, $endLine);
+        $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $filename, $startLine, $endLine);
     }
 
 
 
-    public function addConstantFetchWithSelf($constantName, $context, $startLine, $endLine)
+    public function addConstantFetchWithSelf($constantName, $context, $filename, $startLine, $endLine)
     {
         $classFqn = $context;
-        $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $this->filename, $startLine, $endLine);
+        $this->addUsage(self::USAGE_CONST_FETCH, $classFqn, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -234,21 +221,21 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addConstantFetchWithVariable($variableName, $context, $startLine, $endLine)
+    public function addConstantFetchWithVariable($variableName, $context, $filename, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_CONST_FETCH_WITH_VARIABLE,
             'variable' => $variableName
         );
 
-        $this->addNotice($notice, $context, $startLine, $endLine);
+        $this->addNotice($notice, $context, $filename, $startLine, $endLine);
     }
 
 
 
-    public function addStaticCall($classFqn, $methodName, $args, $context, $startLine, $endLine)
+    public function addStaticCall($classFqn, $methodName, $args, $context, $filename, $startLine, $endLine)
     {
-        $this->addUsage(self::USAGE_STATIC_CALL, $classFqn, $context, $this->filename, $startLine, $endLine);
+        $this->addUsage(self::USAGE_STATIC_CALL, $classFqn, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -261,14 +248,14 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    public function addStaticCallWithVariable($variableName, $methodName, $args, $context, $startLine, $endLine)
+    public function addStaticCallWithVariable($variableName, $methodName, $args, $context, $filename, $startLine, $endLine)
     {
         $notice = array(
             'type' => self::NOTICE_STATC_CALL_WITH_VARIABLE,
             'variable' => $variableName
         );
 
-        $this->addNotice($notice, $context, $startLine, $endLine);
+        $this->addNotice($notice, $context, $filename, $startLine, $endLine);
     }
 
 
@@ -339,10 +326,10 @@ class Index
      * @param integer $startLine
      * @param integer $endLine
      */
-    private function addNotice($notice, $context, $startLine, $endLine)
+    private function addNotice($notice, $context, $filename, $startLine, $endLine)
     {
         $notice['context'] = $context;
-        $notice['file'] = $this->filename;
+        $notice['file'] = $filename;
         $notice['startLine'] = $startLine;
         $notice['endLine'] = $endLine;
 

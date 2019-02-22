@@ -2,11 +2,11 @@
 
 namespace Application\Model\CodeAnalyzer;
 
+use Application\Model\CodeAnalyzer\NodeTraverser\ContextAwareNodeTraverser;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
 use Interop\Container\ContainerInterface;
 use PhpParser\ParserFactory;
-use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
@@ -35,9 +35,9 @@ class CodeAnalyzerFactory implements FactoryInterface
 
 
 
-    private function buildTraverser(Index $index): NodeTraverser
+    private function buildTraverser(Index $index): ContextAwareNodeTraverser
     {
-        $traverser = new NodeTraverser();
+        $traverser = new ContextAwareNodeTraverser();
 
         // Add NameResolver to handle namespaces
         $nameResolver = new NameResolver();

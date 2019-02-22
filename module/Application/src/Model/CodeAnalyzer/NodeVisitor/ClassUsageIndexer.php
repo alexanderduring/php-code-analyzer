@@ -3,14 +3,14 @@
 namespace Application\Model\CodeAnalyzer\NodeVisitor;
 
 use Application\Model\CodeAnalyzer\Index;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_ as StmtClassNode;
 
 /**
  * This visitor looks for class usages
  * and stores them in an index.
  */
-class ClassUsageIndexer extends NodeVisitorAbstract
+class ClassUsageIndexer extends ContextAwareNodeVisitor
 {
     /** @var Index */
     private $index;
@@ -47,9 +47,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
     public function enterNode(Node $node)
     {
         if ($node->getType() == 'Stmt_Class') {
-            $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
-            $context = $fullyQualifiedClassName;
-            array_unshift($this->context, $context);
+            $this->enterNodeStmtClass($node);
         }
 
         if ($node->getType() == 'Stmt_Interface') {
@@ -84,6 +82,24 @@ class ClassUsageIndexer extends NodeVisitorAbstract
         }
 
         $this->index->addNodeType($node->getType());
+    }
+
+
+
+    private function enterNodeStmtClass(StmtClassNode $stmtClassNode)
+    {
+        if (property_exists($stmtClassNode, 'namespacedName')) {
+            $nameParts = $stmtClassNode->namespacedName->parts;
+        } else {
+            // If the class has no name we use the filename and line number
+            $startLine = $stmtClassNode->getAttribute('startLine');
+            $escapedFilename = str_replace('\\', '.', $this->filename);
+            $nameParts = ['__Anonymous', $escapedFilename, $startLine];
+        }
+
+        $fullyQualifiedClassName = implode('\\', $nameParts);
+        $context = $fullyQualifiedClassName;
+        array_unshift($this->context, $context);
     }
 
 
@@ -126,13 +142,13 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             // "new" statement with fully qualified class name
             case 'Name_FullyQualified':
                 $name = implode('\\', $classNode->parts);
-                $this->index->addInstantiation($name, $this->getContext(), $startLine, $endLine);
+                $this->index->addInstantiation($name, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             // "new" statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addInstantiationWithVariable($variableName, $this->getContext(), $startLine, $endLine);
+                $this->index->addInstantiationWithVariable($variableName, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             // "new" statement with static class variable
@@ -141,7 +157,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $className = implode('\\', $fetchNode->class->parts);
                 $variableName = $fetchNode->name;
                 $fullName = $className . "::$" . $variableName;
-                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $startLine, $endLine);
+                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             // "new" statement on array entry
@@ -179,11 +195,11 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $variableName = '$' . $fetchNode->var->name;
                 $dimension = $fetchNode->dim->value;
                 $fullName = $variableName . "['" . $dimension . "']";
-                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $startLine, $endLine);
+                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             default:
-                $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $startLine, $endLine);
+                $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $this->filename, $startLine, $endLine);
         }
     }
 
@@ -199,9 +215,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             if ($use instanceof Node\Stmt\UseUse) {
                 $nameNode = $use->name;
                 $className = implode('\\', $nameNode->parts);
-                $this->index->addUseStatement($className, $this->getContext(), $startLine, $endLine);
+                $this->index->addUseStatement($className, $this->getContext(), $this->filename, $startLine, $endLine);
             } else {
-                $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $startLine, $endLine);
+                $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $this->filename, $startLine, $endLine);
             }
         }
     }
@@ -217,7 +233,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $startLine = $parameter->getAttribute('startLine');
                 $endLine = $parameter->getAttribute('endLine');
 
-                $this->index->addTypeDeclaration($parameter->type->toString(), $this->getContext(), $startLine, $endLine);
+                $this->index->addTypeDeclaration($parameter->type->toString(), $this->getContext(), $this->filename, $startLine, $endLine);
             }
         }
     }
@@ -234,13 +250,13 @@ class ClassUsageIndexer extends NodeVisitorAbstract
             // class constant statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addConstantFetchWithVariable($variableName, $this->getContext(), $startLine, $endLine);
+                $this->index->addConstantFetchWithVariable($variableName, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             case 'Name_FullyQualified':
                 $className = implode('\\', $classNode->parts);
                 $constName = $classConstFetch->name;
-                $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
+                $this->index->addConstantFetch($className, $constName, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             case 'Name':
@@ -249,9 +265,9 @@ class ClassUsageIndexer extends NodeVisitorAbstract
 
                 // @todo: $className could also be 'parent'.
                 if ($className !== 'self') {
-                    $this->index->addConstantFetch($className, $constName, $this->getContext(), $startLine, $endLine);
+                    $this->index->addConstantFetch($className, $constName, $this->getContext(), $this->filename, $startLine, $endLine);
                 } else {
-                    $this->index->addConstantFetchWithSelf($constName, $this->getContext(), $startLine, $endLine);
+                    $this->index->addConstantFetchWithSelf($constName, $this->getContext(), $this->filename, $startLine, $endLine);
                 }
                 break;
 
@@ -276,7 +292,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                 $variableName = '$' . $classNode->name;
                 $methodName = $staticCall->name;
                 $args = $staticCall->args;
-                $this->index->addStaticCallWithVariable($variableName, $methodName, $args, $this->getContext(), $startLine, $endLine);
+                $this->index->addStaticCallWithVariable($variableName, $methodName, $args, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
 
             default:
@@ -287,7 +303,7 @@ class ClassUsageIndexer extends NodeVisitorAbstract
                     $methodName = $staticCall->name;
                     $args = $staticCall->args;
 
-                    $this->index->addStaticCall($className, $methodName, $args, $this->getContext(), $startLine, $endLine);
+                    $this->index->addStaticCall($className, $methodName, $args, $this->getContext(), $this->filename, $startLine, $endLine);
                 }
         }
     }

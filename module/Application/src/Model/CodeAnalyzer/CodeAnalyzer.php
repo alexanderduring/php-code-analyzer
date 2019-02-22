@@ -2,8 +2,8 @@
 
 namespace Application\Model\CodeAnalyzer;
 
+use Application\Model\CodeAnalyzer\NodeTraverser\ContextAwareNodeTraverser;
 use PhpParser\Error as PhpParserError;
-use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -28,7 +28,7 @@ class CodeAnalyzer
     /** @var \PhpParser\Parser */
     private $parser;
 
-    /** @var \PhpParser\NodeTraverser */
+    /** @var ContextAwareNodeTraverser */
     private $traverser;
 
 
@@ -43,10 +43,7 @@ class CodeAnalyzer
 
 
 
-    /**
-     * @param \PhpParser\NodeTraverser $traverser
-     */
-    public function injectTraverser(NodeTraverser $traverser)
+    public function injectTraverser(ContextAwareNodeTraverser $traverser)
     {
         $this->traverser = $traverser;
     }
@@ -139,10 +136,9 @@ class CodeAnalyzer
      */
     private function analyze($filename, $code)
     {
-        $this->index->setFilename($filename);
-
         try {
             $nodes = $this->parser->parse($code);
+            $this->traverser->setFilename($filename);
             $this->traverser->traverse($nodes);
         }
         catch (PhpParserError $exception) {

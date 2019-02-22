@@ -3,7 +3,6 @@
 namespace Application\Model\CodeAnalyzer\NodeVisitor;
 
 use Application\Model\CodeAnalyzer\Index;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_ as StmtClassNode;
 
@@ -11,7 +10,7 @@ use PhpParser\Node\Stmt\Class_ as StmtClassNode;
  * This visitor looks for class definitions
  * and stores them in an index.
  */
-class ClassDefinitionIndexer extends NodeVisitorAbstract
+class ClassDefinitionIndexer extends ContextAwareNodeVisitor
 {
     /** @var \Application\Model\CodeAnalyzer\Index */
     private $index;
@@ -72,9 +71,6 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
 
 
 
-    /**
-     * @param StmtClassNode $stmtClassNode
-     */
     private function enterNodeStmtClass(StmtClassNode $stmtClassNode)
     {
         if ($stmtClassNode->isAbstract()) {
@@ -83,11 +79,11 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
         elseif ($stmtClassNode->isFinal()) {
             $this->addFinalClassToIndex($stmtClassNode);
         }
-        elseif (!$stmtClassNode->isAbstract() && !$stmtClassNode->isAbstract()) {
-            $this->addClassToIndex($stmtClassNode);
+        elseif ($stmtClassNode->isAnonymous()) {
+            $this->addAnonymousClassToIndex($stmtClassNode);
         }
         else {
-            throw new Exception('Found abstract final class');
+            $this->addClassToIndex($stmtClassNode);
         }
     }
 
@@ -111,6 +107,13 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
     private function addAbstractClassToIndex(Node $classStatement)
     {
         $this->addEntryToIndex($classStatement, 'abstract class');
+    }
+
+
+
+    private function addAnonymousClassToIndex(Node $classStatement)
+    {
+        $this->addEntryToIndex($classStatement, 'anonymous class');
     }
 
 
@@ -143,45 +146,47 @@ class ClassDefinitionIndexer extends NodeVisitorAbstract
      */
     private function addEntryToIndex(Node $node, $type)
     {
+        $startLine = $node->getAttribute('startLine');
+        $endLine = $node->getAttribute('endLine');
+
         if (property_exists($node, 'namespacedName')) {
             $nameParts = $node->namespacedName->parts;
+        } else {
+            // If the class has no name we use the filename and line number
+            $escapedFilename = str_replace('/', '.', $this->filename);
+            $nameParts = ['__Anonymous', $escapedFilename, $startLine];
+        }
 
-            // Extended classes
-            $extendsNode = $node->extends;
-            if ($extendsNode instanceof Node\Name\FullyQualified) {
-                $extendedClass = array(
+        // Extended classes
+        $extendsNode = $node->extends;
+        if ($extendsNode instanceof Node\Name\FullyQualified) {
+            $extendedClass = array(
+                'name' => array(
+                    'fqn' => $extendsNode->toString(),
+                    'parts' => $extendsNode->parts
+                )
+            );
+        } else {
+            $extendedClass = null;
+        }
+
+        // Implemented interfaces
+        if (property_exists($node, 'implements')) {
+            $implementedInterfaces = array();
+            foreach($node->implements as $implementsNode) {
+                $interface = array(
                     'name' => array(
-                        'fqn' => $extendsNode->toString(),
-                        'parts' => $extendsNode->parts
+                        'fqn' => $implementsNode->toString(),
+                        'parts' => $implementsNode->parts
                     )
                 );
-            } else {
-                $extendedClass = null;
+                $implementedInterfaces[] = $interface;
             }
-
-            // Implemented interfaces
-            if (property_exists($node, 'implements')) {
-                $implementedInterfaces = array();
-                foreach($node->implements as $implementsNode) {
-                    $interface = array(
-                        'name' => array(
-                            'fqn' => $implementsNode->toString(),
-                            'parts' => $implementsNode->parts
-                        )
-                    );
-                    $implementedInterfaces[] = $interface;
-                }
-                $implementedInterfaces = empty($implementedInterfaces) ? null : $implementedInterfaces;
-            } else {
-                $implementedInterfaces = null;
-            }
-
-            $startLine = $node->getAttribute('startLine');
-            $endLine = $node->getAttribute('endLine');
-            $this->index->addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $startLine, $endLine);
+            $implementedInterfaces = empty($implementedInterfaces) ? null : $implementedInterfaces;
         } else {
-            print_r($node);
-            exit("Found class definition without name.");
+            $implementedInterfaces = null;
         }
+
+        $this->index->addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $this->filename, $startLine, $endLine);
     }
 }
