@@ -5,6 +5,7 @@ namespace Application\Model\CodeAnalyzer\NodeVisitor;
 use Application\Model\CodeAnalyzer\Index;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_ as StmtClassNode;
+use PhpParser\Node\Expr\New_ as ExprNewNode;
 
 /**
  * This visitor looks for class usages
@@ -107,7 +108,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
 
 
-    private function analyzeInstantiation(Node $newNode)
+    private function analyzeInstantiation(ExprNewNode $newNode)
     {
         $startLine = $newNode->getAttribute('startLine');
         $endLine = $newNode->getAttribute('endLine');
@@ -173,6 +174,21 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                 $fullName = $variableName . "['" . $dimension . "']";
                 $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $this->filename, $startLine, $endLine);
                 break;
+
+            case 'Name':
+                /** @var Node\Name $classNode */
+                if ($classNode->isSpecialClassName()) {
+                    switch ($classNode) {
+                        case 'self':
+                            $this->index->addInstantiation($this->getContext(), $this->getContext(), $this->filename, $startLine, $endLine);
+                            break;
+
+                        default:
+                            echo "new $classNode (context: {$this->getContext()}).\n";
+                    }
+                }
+                break;
+
 
             default:
                 $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $this->filename, $startLine, $endLine);
