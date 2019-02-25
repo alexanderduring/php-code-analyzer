@@ -5,6 +5,7 @@ namespace Application\Model\CodeAnalyzer;
 use Application\Model\CodeAnalyzer\NodeTraverser\ContextAwareNodeTraverser;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassDefinitionIndexer;
 use Application\Model\CodeAnalyzer\NodeVisitor\ClassUsageIndexer;
+use Application\Model\File\RecursiveFileIterator;
 use Interop\Container\ContainerInterface;
 use PhpParser\ParserFactory;
 use PhpParser\NodeVisitor\NameResolver;
@@ -25,6 +26,10 @@ class CodeAnalyzerFactory implements FactoryInterface
         $parserFactory = new ParserFactory();
         $parser = $parserFactory->create(ParserFactory::PREFER_PHP5);
         $codeAnalyzer->injectParser($parser);
+
+        // Inject RecursiveFileIterator
+        $fileIterator = new RecursiveFileIterator();
+        $codeAnalyzer->injectRecursiveFileIterator($fileIterator);
 
         // Inject Traverser
         $traverser = $this->buildTraverser($index);

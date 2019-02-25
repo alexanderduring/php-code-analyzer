@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Model\CodeAnalyzer;
+namespace Application\Model\File;
 
 use RecursiveFilterIterator as SplRecursiveFilterIterator;
 use RecursiveIterator;
