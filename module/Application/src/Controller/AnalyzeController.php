@@ -6,13 +6,18 @@ use Application\Model\ClassName\ClassName;
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
 use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\Index\NamespaceTree;
+use Application\Model\File\RecursiveFileIterator;
 use EmberDb\DocumentManager;
+use SplFileInfo;
 use Zend\Mvc\Controller\AbstractActionController;
 
 class AnalyzeController extends AbstractActionController
 {
     /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
     private $analyzer;
+
+    /** @var RecursiveFileIterator */
+    private $recursiveFileIterator;
 
 
 
@@ -23,20 +28,38 @@ class AnalyzeController extends AbstractActionController
 
 
 
+    public function injectRecursiveFileIterator(RecursiveFileIterator $recursiveFileIterator)
+    {
+        $this->recursiveFileIterator = $recursiveFileIterator;
+    }
+
+
+
     public function runAction()
     {
-        $path = (string) $this->getRequest()->getParam('path');
+        $basePath = (string) $this->getRequest()->getParam('path');
         $ignores = $this->splitCommaSeparatedValue($this->getRequest()->getParam('ignore'));
 
-        if (file_exists($path)) {
-            $this->analyzer->process($path, $ignores);
+        if (file_exists($basePath)) {
+            $files = $this->recursiveFileIterator->open('/\.php$/', $basePath, $ignores);
+            foreach ($files as $file) {
+                /** @var SplFileInfo $file */
+
+                $code = file_get_contents((string) $file);
+                if (false === $code) {
+                    echo "Could not read file $file.\n";
+                } else {
+                    $relativeFilepath = ltrim(str_replace($basePath, '', $file->getPathName()), '/');
+                    $this->analyzer->analyze($code, $relativeFilepath);
+                }
+            }
 
             $this->storeResults();
 
             $usedMemory = round(memory_get_usage() / (1024*1024), 2);
             echo "Analyzing finished. Used memory: " . $usedMemory . " MBytes.\n\n";
         } else {
-            echo "The file/folder " . $path . " does not exist.\n\n";
+            echo "The file/folder " . $basePath . " does not exist.\n\n";
         }
 
         return;
