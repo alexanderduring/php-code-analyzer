@@ -3,6 +3,7 @@
 namespace Application\Controller;
 
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
+use Application\Model\File\FilesProcessor;
 use Application\Model\File\RecursiveFileIterator;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -16,6 +17,10 @@ class AnalyzeControllerFactory implements FactoryInterface
         // Inject CodeAnalyzer
         $codeAnalyzer = $serviceLocator->get(CodeAnalyzer::class);
         $analyzeController->injectCodeAnalyzer($codeAnalyzer);
+
+        // Inject FilesProcessor
+        $filesProcessor = new FilesProcessor();
+        $analyzeController->injectFilesProcessor($filesProcessor);
 
         // Inject RecursiveFileIterator
         $fileIterator = new RecursiveFileIterator();

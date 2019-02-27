@@ -6,15 +6,18 @@ use Application\Model\ClassName\ClassName;
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
 use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\Index\NamespaceTree;
+use Application\Model\File\FilesProcessor;
 use Application\Model\File\RecursiveFileIterator;
 use EmberDb\DocumentManager;
-use SplFileInfo;
 use Zend\Mvc\Controller\AbstractActionController;
 
 class AnalyzeController extends AbstractActionController
 {
     /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
     private $analyzer;
+
+    /** @var FilesProcessor */
+    private $filesProcessor;
 
     /** @var RecursiveFileIterator */
     private $recursiveFileIterator;
@@ -24,6 +27,13 @@ class AnalyzeController extends AbstractActionController
     public function injectCodeAnalyzer(CodeAnalyzer $codeAnalyzer)
     {
         $this->analyzer = $codeAnalyzer;
+    }
+
+
+
+    public function injectFilesProcessor(FilesProcessor $filesProcessor)
+    {
+        $this->filesProcessor = $filesProcessor;
     }
 
 
@@ -42,18 +52,8 @@ class AnalyzeController extends AbstractActionController
 
         if (file_exists($basePath)) {
             $files = $this->recursiveFileIterator->open('/\.php$/', $basePath, $ignores);
-            foreach ($files as $file) {
-                /** @var SplFileInfo $file */
 
-                $code = file_get_contents((string) $file);
-                if (false === $code) {
-                    echo "Could not read file $file.\n";
-                } else {
-                    $relativeFilepath = ltrim(str_replace($basePath, '', $file->getPathName()), '/');
-                    $this->analyzer->analyze($code, $relativeFilepath);
-                }
-            }
-
+            $this->filesProcessor->processFiles($files, $this->analyzer);
             $this->storeResults();
 
             $usedMemory = round(memory_get_usage() / (1024*1024), 2);
