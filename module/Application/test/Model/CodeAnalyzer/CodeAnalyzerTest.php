@@ -39,7 +39,27 @@ class CodeAnalyzerTest extends TestCase
                     'classDefinitions' => [
                         'foundClasses' => [
                             [
-                                'fqn' => ['Foo']
+                                'fqn' => ['Foo'],
+                                'type' => 'class'
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'Simple interface definition' => [
+                'preconditions' => [
+                    'code' => '<?php
+                        interface Bar
+                        {
+                            public function __construct(Bar $bar);
+                        }'
+                ],
+                'expectations' => [
+                    'classDefinitions' => [
+                        'foundClasses' => [
+                            [
+                                'fqn' => ['Bar'],
+                                'type' => 'interface'
                             ]
                         ]
                     ]
@@ -120,7 +140,10 @@ class CodeAnalyzerTest extends TestCase
         $prophecy = $this->prophesize(Index::class);
 
         foreach ($expectations['classDefinitions']['foundClasses'] as $class) {
-            $prophecy->addClass($class['fqn'], 'class', [], [], $preconditions['source'], Argument::cetera())->shouldBeCalled();
+            $fqn = $class['fqn'];
+            $type = $class['type'];
+            $source = $preconditions['source'];
+            $prophecy->addClass($fqn, $type, [], [], $source, Argument::cetera())->shouldBeCalled();
             $prophecy->addNodeType(Argument::type('string'))->willReturn(true);
             $prophecy->addTypeDeclaration(Argument::cetera())->shouldBeCalled();
         }
