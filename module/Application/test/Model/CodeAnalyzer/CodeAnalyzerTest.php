@@ -18,7 +18,6 @@ class CodeAnalyzerTest extends TestCase
     static public function providerAnalyze()
     {
         $defaultPreconditions = [
-            'source' => 'test-source.txt'
         ];
 
         $defaultExpectations = [
@@ -27,13 +26,7 @@ class CodeAnalyzerTest extends TestCase
         $testCases = [
             'Simple class definition' => [
                 'preconditions' => [
-                    'code' => '<?php
-                        class Foo
-                        {
-                            public function __construct(Bar $bar) {
-                                echo $bar;
-                            }
-                        }'
+                    'codeFile' => 'definition-class-global.php'
                 ],
                 'expectations' => [
                     'classDefinitions' => [
@@ -48,11 +41,7 @@ class CodeAnalyzerTest extends TestCase
             ],
             'Simple interface definition' => [
                 'preconditions' => [
-                    'code' => '<?php
-                        interface Bar
-                        {
-                            public function __construct(Bar $bar);
-                        }'
+                    'codeFile' => 'definition-interface-global.php'
                 ],
                 'expectations' => [
                     'classDefinitions' => [
@@ -83,8 +72,10 @@ class CodeAnalyzerTest extends TestCase
      */
     public function testAnalyze(array $preconditions, array $expections)
     {
+        $code = file_get_contents(__DIR__ . '/../../ressources/' . $preconditions['codeFile']);
+
         $codeAnalyzer = $this->getCodeAnalyzer($preconditions, $expections);
-        $codeAnalyzer->analyze($preconditions['code'], $preconditions['source']);
+        $codeAnalyzer->analyze($code, $preconditions['codeFile']);
     }
 
 
@@ -142,7 +133,7 @@ class CodeAnalyzerTest extends TestCase
         foreach ($expectations['classDefinitions']['foundClasses'] as $class) {
             $fqn = $class['fqn'];
             $type = $class['type'];
-            $source = $preconditions['source'];
+            $source = $preconditions['codeFile'];
             $prophecy->addClass($fqn, $type, [], [], $source, Argument::cetera())->shouldBeCalled();
             $prophecy->addNodeType(Argument::type('string'))->willReturn(true);
             $prophecy->addTypeDeclaration(Argument::cetera())->shouldBeCalled();
