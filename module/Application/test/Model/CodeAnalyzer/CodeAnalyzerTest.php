@@ -23,30 +23,29 @@ class CodeAnalyzerTest extends TestCase
         $defaultExpectations = [
         ];
 
-        $testCases = [
-            'Simple class definition' => [
-                'preconditions' => [
-                    'codeFile' => 'definition-class-global.php'
-                ],
-                'expectations' => [
-                ]
-            ],
-            'Simple interface definition' => [
-                'preconditions' => [
-                    'codeFile' => 'definition-interface-global.php'
-                ],
-                'expectations' => [
-                ]
-            ]
+        $testCaseFiles =[
+            'definition-class-global.php',
+            'definition-interface-global.php'
         ];
 
-        // Merge test data with default data
-        foreach ($testCases as &$testCase) {
+        foreach ($testCaseFiles as $testCaseFile) {
+            $fileContent = file_get_contents(__DIR__ . '/../../ressources/' . $testCaseFile);
+
+            // Extract test case data
+            $posScriptTag = strpos($fileContent,'</script>');
+            $testCaseString = substr($fileContent, 0, $posScriptTag + 9);
+            $testCaseString = str_replace(['<script>', '</script>', 'testcase = '], '', $testCaseString);
+            $testCase = json_decode($testCaseString, true);
+
+            // Assigning the file content as code to be analyzed
+            $testCase['preconditions']['code'] = $fileContent;
+
+            // Merge test case with default settings
             $testCase['preconditions'] = array_merge($defaultPreconditions, $testCase['preconditions']);
             $testCase['expectations'] = array_merge($defaultExpectations, $testCase['expectations']);
-        }
 
-        return $testCases;
+            yield $testCase;
+        }
     }
 
 
@@ -54,15 +53,10 @@ class CodeAnalyzerTest extends TestCase
     /**
      * @dataProvider providerAnalyze
      */
-    public function testAnalyze(array $preconditions, array $expections)
+    public function testAnalyze(array $preconditions, array $expectations)
     {
-        $code = file_get_contents(__DIR__ . '/../../ressources/' . $preconditions['codeFile']);
-        $testCase = $this->extractTestCase($code);
-        $preconditions = $testCase['preconditions'];
-        $expectations = $testCase['expectations'];
-
         $codeAnalyzer = $this->getCodeAnalyzer($preconditions, $expectations);
-        $codeAnalyzer->analyze($code, $preconditions['sourceName']);
+        $codeAnalyzer->analyze($preconditions['code'], $preconditions['sourceName']);
     }
 
 
@@ -129,17 +123,5 @@ class CodeAnalyzerTest extends TestCase
         $index = $prophecy->reveal();
 
         return $index;
-    }
-
-
-
-    private function extractTestCase(string $testFileContent): array
-    {
-        $posScriptTag = strpos($testFileContent,'</script>');
-        $testCaseString = substr($testFileContent, 0, $posScriptTag+9);
-        $testCaseString = str_replace(['<script>', '</script>', 'testcase = '], '', $testCaseString);
-        $testCase = json_decode($testCaseString, true);
-
-        return $testCase;
     }
 }
