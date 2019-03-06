@@ -29,14 +29,6 @@ class CodeAnalyzerTest extends TestCase
                     'codeFile' => 'definition-class-global.php'
                 ],
                 'expectations' => [
-                    'classDefinitions' => [
-                        'foundClasses' => [
-                            [
-                                'fqn' => ['Foo'],
-                                'type' => 'class'
-                            ]
-                        ]
-                    ]
                 ]
             ],
             'Simple interface definition' => [
@@ -44,14 +36,6 @@ class CodeAnalyzerTest extends TestCase
                     'codeFile' => 'definition-interface-global.php'
                 ],
                 'expectations' => [
-                    'classDefinitions' => [
-                        'foundClasses' => [
-                            [
-                                'fqn' => ['Bar'],
-                                'type' => 'interface'
-                            ]
-                        ]
-                    ]
                 ]
             ]
         ];
@@ -73,9 +57,12 @@ class CodeAnalyzerTest extends TestCase
     public function testAnalyze(array $preconditions, array $expections)
     {
         $code = file_get_contents(__DIR__ . '/../../ressources/' . $preconditions['codeFile']);
+        $testCase = $this->extractTestCase($code);
+        $preconditions = $testCase['preconditions'];
+        $expectations = $testCase['expectations'];
 
-        $codeAnalyzer = $this->getCodeAnalyzer($preconditions, $expections);
-        $codeAnalyzer->analyze($code, $preconditions['codeFile']);
+        $codeAnalyzer = $this->getCodeAnalyzer($preconditions, $expectations);
+        $codeAnalyzer->analyze($code, $preconditions['sourceName']);
     }
 
 
@@ -133,7 +120,7 @@ class CodeAnalyzerTest extends TestCase
         foreach ($expectations['classDefinitions']['foundClasses'] as $class) {
             $fqn = $class['fqn'];
             $type = $class['type'];
-            $source = $preconditions['codeFile'];
+            $source = $preconditions['sourceName'];
             $prophecy->addClass($fqn, $type, [], [], $source, Argument::cetera())->shouldBeCalled();
             $prophecy->addNodeType(Argument::type('string'))->willReturn(true);
             $prophecy->addTypeDeclaration(Argument::cetera())->shouldBeCalled();
@@ -142,5 +129,17 @@ class CodeAnalyzerTest extends TestCase
         $index = $prophecy->reveal();
 
         return $index;
+    }
+
+
+
+    private function extractTestCase(string $testFileContent): array
+    {
+        $posScriptTag = strpos($testFileContent,'</script>');
+        $testCaseString = substr($testFileContent, 0, $posScriptTag+9);
+        $testCaseString = str_replace(['<script>', '</script>', 'testcase = '], '', $testCaseString);
+        $testCase = json_decode($testCaseString, true);
+
+        return $testCase;
     }
 }
