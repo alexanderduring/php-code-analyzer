@@ -8,7 +8,8 @@
                 "foundClasses": [
                     {
                         "fqn": ["Bar"],
-                        "type": "interface"
+                        "type": "interface",
+                        "lines": [3, 6]
                     }
                 ]
             }

@@ -37,8 +37,10 @@ class CodeAnalyzerTest extends TestCase
             $testCaseString = str_replace(['<script>', '</script>', 'testcase = '], '', $testCaseString);
             $testCase = json_decode($testCaseString, true);
 
-            // Assigning the file content as code to be analyzed
-            $testCase['preconditions']['code'] = $fileContent;
+            // Assigning the code to be analyzed
+            $posPhpTag = strpos($fileContent, '<?php');
+            $code = substr($fileContent, $posPhpTag);
+            $testCase['preconditions']['code'] = $code;
 
             // Merge test case with default settings
             $testCase['preconditions'] = array_merge($defaultPreconditions, $testCase['preconditions']);
@@ -114,8 +116,11 @@ class CodeAnalyzerTest extends TestCase
         foreach ($expectations['classDefinitions']['foundClasses'] as $class) {
             $fqn = $class['fqn'];
             $type = $class['type'];
+            $startLine = $class['lines'][0];
+            $endLine = $class['lines'][1];
             $source = $preconditions['sourceName'];
-            $prophecy->addClass($fqn, $type, [], [], $source, Argument::cetera())->shouldBeCalled();
+
+            $prophecy->addClass($fqn, $type, [], [], $source, $startLine, $endLine)->shouldBeCalled();
             $prophecy->addTypeDeclaration(Argument::cetera())->shouldBeCalled();
         }
 

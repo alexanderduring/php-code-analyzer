@@ -8,7 +8,8 @@
                 "foundClasses": [
                     {
                         "fqn": ["Foo"],
-                        "type": "class"
+                        "type": "class",
+                        "lines": [3, 9]
                     }
                 ]
             }
