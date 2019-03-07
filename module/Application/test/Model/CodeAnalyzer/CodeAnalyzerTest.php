@@ -116,7 +116,6 @@ class CodeAnalyzerTest extends TestCase
             $type = $class['type'];
             $source = $preconditions['sourceName'];
             $prophecy->addClass($fqn, $type, [], [], $source, Argument::cetera())->shouldBeCalled();
-            $prophecy->addNodeType(Argument::type('string'))->willReturn(true);
             $prophecy->addTypeDeclaration(Argument::cetera())->shouldBeCalled();
         }
 

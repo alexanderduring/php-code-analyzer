@@ -42,16 +42,6 @@ class Index
 
 
 
-    public function addNodeType(string $type)
-    {
-        if (!in_array($type, $this->foundNodeTypes)) {
-            $this->foundNodeTypes[] = $type;
-            //echo $type."\n";
-        }
-    }
-
-
-
     public function addClass(array $nameParts, string $type, array $extendedClass, array $implementedInterfaces, string $filename, int $startLine, int $endLine)
     {
         $fullyQualifiedName = implode('\\', $nameParts);

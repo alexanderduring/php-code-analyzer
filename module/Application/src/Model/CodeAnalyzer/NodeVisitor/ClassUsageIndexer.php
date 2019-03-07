@@ -69,8 +69,6 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
         if ($node->getType() == 'Expr_StaticCall') {
             $this->analyzeStaticCall($node);
         }
-
-        $this->index->addNodeType($node->getType());
     }
 
 
