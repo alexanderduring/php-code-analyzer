@@ -17,6 +17,7 @@
     },
     "require": {
         "php": ">=7.0",
+        "ext-json": "*",
         "phpunit/phpunit": "6.*",
         "zendframework/zendframework": "^3.0",
         "nikic/php-parser": "4.2.1",
