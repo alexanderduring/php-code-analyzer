@@ -2,6 +2,7 @@
 
 namespace Application\Model\CodeAnalyzer;
 
+use Application\Model\CodeAnalyzer\Context\Context;
 use Application\Model\CodeAnalyzer\NodeTraverser\ContextAwareNodeTraverser;
 use PhpParser\Error as PhpParserError;
 use PhpParser\Parser;
@@ -61,7 +62,9 @@ class CodeAnalyzer
     {
         try {
             $nodes = $this->parser->parse($code);
-            $this->traverser->setFilename($sourceName);
+
+            $context = new Context($sourceName);
+            $this->traverser->setContext($context);
             $this->traverser->traverse($nodes);
         }
         catch (PhpParserError $exception) {

@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Application\Model\CodeAnalyzer\NodeVisitor;
 
+use Application\Model\CodeAnalyzer\Context\Context;
 use PhpParser\NodeVisitorAbstract;
 
 class ContextAwareNodeVisitor extends NodeVisitorAbstract
 {
-    /** @var string */
-    protected $filename = '';
+    /** @var Context */
+    protected $context;
 
 
 
-    public function setFilename(string $filename)
+    public function setContext(Context $context)
     {
-        $this->filename = $filename;
+        $this->context = $context;
     }
 }

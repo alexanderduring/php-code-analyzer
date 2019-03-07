@@ -16,8 +16,6 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
     /** @var Index */
     private $index;
 
-    private $context = ['global'];
-
 
 
     public function injectIndex(Index $index)
@@ -40,9 +38,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
         }
 
         if ($node->getType() == 'Stmt_Interface') {
-            $fullyQualifiedClassName = implode('\\', $node->namespacedName->parts);
-            $context = $fullyQualifiedClassName;
-            array_unshift($this->context, $context);
+            $this->context->enterClass($node->namespacedName->parts);
         }
 
         // Found "new" node
@@ -80,13 +76,11 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
         } else {
             // If the class has no name we use the filename and line number
             $startLine = $stmtClassNode->getAttribute('startLine');
-            $escapedFilename = str_replace('\\', '.', $this->filename);
+            $escapedFilename = str_replace('\\', '.', $this->context->getFileName());
             $nameParts = ['__Anonymous', $escapedFilename, $startLine];
         }
 
-        $fullyQualifiedClassName = implode('\\', $nameParts);
-        $context = $fullyQualifiedClassName;
-        array_unshift($this->context, $context);
+        $this->context->enterClass($nameParts);
     }
 
 
@@ -94,7 +88,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
     public function leaveNode(Node $node)
     {
         if (in_array($node->getType(), array('Stmt_Class', 'Stmt_Interface'))) {
-            array_shift($this->context);
+            $this->context->leaveClass();
         }
     }
 
@@ -108,22 +102,24 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
     private function analyzeInstantiation(ExprNewNode $newNode)
     {
+        $fileName = $this->context->getFileName();
         $startLine = $newNode->getAttribute('startLine');
         $endLine = $newNode->getAttribute('endLine');
         $classNode = $newNode->class;
 
+        $contextClass = $this->context->getClass();
         switch ($classNode->getType()) {
 
             // "new" statement with fully qualified class name
             case 'Name_FullyQualified':
                 $name = implode('\\', $classNode->parts);
-                $this->index->addInstantiation($name, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addInstantiation($name, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             // "new" statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addInstantiationWithVariable($variableName, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addInstantiationWithVariable($variableName, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             // "new" statement with static class variable
@@ -132,7 +128,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                 $className = implode('\\', $fetchNode->class->parts);
                 $variableName = $fetchNode->name;
                 $fullName = $className . "::$" . $variableName;
-                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addInstantiationWithVariable($fullName, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             // "new" statement on array entry
@@ -170,7 +166,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                 $variableName = '$' . $fetchNode->var->name;
                 $dimension = $fetchNode->dim->value;
                 $fullName = $variableName . "['" . $dimension . "']";
-                $this->index->addInstantiationWithVariable($fullName, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addInstantiationWithVariable($fullName, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             case 'Name':
@@ -178,18 +174,18 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                 if ($classNode->isSpecialClassName()) {
                     switch ($classNode) {
                         case 'self':
-                            $this->index->addInstantiation($this->getContext(), $this->getContext(), $this->filename, $startLine, $endLine);
+                            $this->index->addInstantiation($contextClass, $contextClass, $fileName, $startLine, $endLine);
                             break;
 
                         default:
-                            echo "new $classNode (context: {$this->getContext()}).\n";
+                            echo "new $classNode (context: {$contextClass}).\n";
                     }
                 }
                 break;
 
 
             default:
-                $this->index->addUnknownInstantiation($classNode->getType(), $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addUnknownInstantiation($classNode->getType(), $contextClass, $fileName, $startLine, $endLine);
         }
     }
 
@@ -197,6 +193,8 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
     private function analyzeUseStatement(Node $node)
     {
+        $fileName = $this->context->getFileName();
+        $contextClass = $this->context->getClass();
 
         foreach ($node->uses as $use) {
             $startLine = $use->getAttribute('startLine');
@@ -205,9 +203,9 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
             if ($use instanceof Node\Stmt\UseUse) {
                 $nameNode = $use->name;
                 $className = implode('\\', $nameNode->parts);
-                $this->index->addUseStatement($className, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addUseStatement($className, $contextClass, $fileName, $startLine, $endLine);
             } else {
-                $this->index->addUnknownUseStatement($use->getType(), $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addUnknownUseStatement($use->getType(), $contextClass, $fileName, $startLine, $endLine);
             }
         }
     }
@@ -216,6 +214,9 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
     private function analyzeClassMethod(Node $node)
     {
+        $fileName = $this->context->getFileName();
+        $contextClass = $this->context->getClass();
+
         $parameters = $node->params;
         foreach ($parameters as $parameter) {
             if (!in_array($parameter->type, ['array', 'callable', 'bool', 'float', 'int', 'string', 'self', ''])) {
@@ -223,7 +224,7 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                 $startLine = $parameter->getAttribute('startLine');
                 $endLine = $parameter->getAttribute('endLine');
 
-                $this->index->addTypeDeclaration($parameter->type->toString(), $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addTypeDeclaration($parameter->type->toString(), $contextClass, $fileName, $startLine, $endLine);
             }
         }
     }
@@ -232,6 +233,8 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
     private function analyzeClassConstant(Node\Expr\ClassConstFetch $classConstFetch)
     {
+        $fileName = $this->context->getFileName();
+        $contextClass = $this->context->getClass();
         $startLine = $classConstFetch->getAttribute('startLine');
         $endLine = $classConstFetch->getAttribute('endLine');
         $classNode = $classConstFetch->class;
@@ -240,13 +243,13 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
             // class constant statement with variable
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
-                $this->index->addConstantFetchWithVariable($variableName, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addConstantFetchWithVariable($variableName, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             case 'Name_FullyQualified':
                 $className = implode('\\', $classNode->parts);
                 $constName = $classConstFetch->name;
-                $this->index->addConstantFetch($className, $constName, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addConstantFetch($className, $constName, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             case 'Name':
@@ -255,9 +258,9 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
                 // @todo: $className could also be 'parent'.
                 if ($className !== 'self') {
-                    $this->index->addConstantFetch($className, $constName, $this->getContext(), $this->filename, $startLine, $endLine);
+                    $this->index->addConstantFetch($className, $constName, $contextClass, $fileName, $startLine, $endLine);
                 } else {
-                    $this->index->addConstantFetchWithSelf($constName, $this->getContext(), $this->filename, $startLine, $endLine);
+                    $this->index->addConstantFetchWithSelf($constName, $contextClass, $fileName, $startLine, $endLine);
                 }
                 break;
 
@@ -271,16 +274,18 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
 
     private function analyzeStaticCall(Node\Expr\StaticCall $staticCall)
     {
+        $fileName = $this->context->getFileName();
         $startLine = $staticCall->getAttribute('startLine');
         $endLine = $staticCall->getAttribute('endLine');
         $classNode = $staticCall->class;
+        $contextClass = $this->context->getClass();
 
         switch ($classNode->getType()) {
             case 'Expr_Variable':
                 $variableName = '$' . $classNode->name;
                 $methodName = $staticCall->name;
                 $args = $staticCall->args;
-                $this->index->addStaticCallWithVariable($variableName, $methodName, $args, $this->getContext(), $this->filename, $startLine, $endLine);
+                $this->index->addStaticCallWithVariable($variableName, $methodName, $args, $contextClass, $fileName, $startLine, $endLine);
                 break;
 
             default:
@@ -291,15 +296,8 @@ class ClassUsageIndexer extends ContextAwareNodeVisitor
                     $methodName = $staticCall->name;
                     $args = $staticCall->args;
 
-                    $this->index->addStaticCall($className, $methodName, $args, $this->getContext(), $this->filename, $startLine, $endLine);
+                    $this->index->addStaticCall($className, $methodName, $args, $contextClass, $fileName, $startLine, $endLine);
                 }
         }
-    }
-
-
-
-    private function getContext(): string
-    {
-        return $this->context[0];
     }
 }

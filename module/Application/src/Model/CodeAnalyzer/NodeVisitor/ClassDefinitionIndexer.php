@@ -118,7 +118,7 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
             $nameParts = $node->namespacedName->parts;
         } else {
             // If the class has no name we use the filename and line number
-            $escapedFilename = str_replace('/', '.', $this->filename);
+            $escapedFilename = str_replace('/', '.', $this->context->getFileName());
             $nameParts = ['__Anonymous', $escapedFilename, $startLine];
         }
 
@@ -155,6 +155,7 @@ class ClassDefinitionIndexer extends ContextAwareNodeVisitor
             $implementedInterfaces = [];
         }
 
-        $this->index->addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $this->filename, $startLine, $endLine);
+        $fileName = $this->context->getFileName();
+        $this->index->addClass($nameParts, $type, $extendedClass, $implementedInterfaces, $fileName, $startLine, $endLine);
     }
 }

@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Application\Model\CodeAnalyzer\NodeTraverser;
 
+use Application\Model\CodeAnalyzer\Context\Context;
 use Application\Model\CodeAnalyzer\NodeVisitor\ContextAwareNodeVisitor;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 
 class ContextAwareNodeTraverser extends NodeTraverser
 {
-    /** @var string */
-    protected $filename = '';
+    /** @var Context */
+    protected $context;
 
 
 
-    public function setFilename(string $filename)
+    public function setContext(Context $context)
     {
-        $this->filename = $filename;
+        $this->context = $context;
     }
 
 
@@ -30,7 +31,7 @@ class ContextAwareNodeTraverser extends NodeTraverser
      */
     public function traverse(array $nodes) : array
     {
-        $this->setFilenameToVisitors();
+        $this->setContextToVisitors();
         $nodes = parent::traverse($nodes);
 
         return $nodes;
@@ -38,11 +39,11 @@ class ContextAwareNodeTraverser extends NodeTraverser
 
 
 
-    private function setFilenameToVisitors()
+    private function setContextToVisitors()
     {
         foreach ($this->visitors as $visitor) {
             if ($visitor instanceof ContextAwareNodeVisitor) {
-                $visitor->setFilename($this->filename);
+                $visitor->setContext($this->context);
             }
         }
     }
