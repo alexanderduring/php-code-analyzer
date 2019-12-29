@@ -1,216 +1,216 @@
 <?php
 
-return array(
-    'controllers' => array(
-        'invokables' => array(
+return [
+    'controllers' => [
+        'invokables' => [
             Application\Controller\IndexController::class => Application\Controller\IndexController::class
-        ),
-        'factories' => array(
+        ],
+        'factories' => [
             Application\Controller\AnalyzeController::class => Application\Controller\AnalyzeControllerFactory::class
-        )
-    ),
-    'service_manager' => array(
-        'factories' => array(
+        ]
+    ],
+    'service_manager' => [
+        'factories' => [
             Application\Model\CodeAnalyzer\CodeAnalyzer::class => Application\Model\CodeAnalyzer\CodeAnalyzerFactory::class
-        )
-    ),
-    'view_helpers' => array(
-        'factories' => array(
+        ]
+    ],
+    'view_helpers' => [
+        'factories' => [
             'menu' => Application\View\Helper\MenuFactory::class
-        )
-    ),
-    'view_manager' => array(
+        ]
+    ],
+    'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
         'doctype'                  => 'HTML5',
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
-        'template_map' => array(
+        'template_map' => [
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
             'error/404'               => __DIR__ . '/../view/error/404.phtml',
             'error/index'             => __DIR__ . '/../view/error/index.phtml',
 
             'application/viewhelper/menu' => __DIR__ . '/../view/viewhelper/menu.phtml'
-        ),
-        'template_path_stack' => array(
+        ],
+        'template_path_stack' => [
             __DIR__ . '/../view',
-        ),
-        'strategies' => array(
+        ],
+        'strategies' => [
             'ViewJsonStrategy'
-        )
-    ),
-    'router' => array(
-        'routes' => array(
-            'home' => array(
+        ]
+    ],
+    'router' => [
+        'routes' => [
+            'home' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'index'
-                    )
-                )
-            ),
-            'd3-bar-chart-one' => array(
+                    ]
+                ]
+            ],
+            'd3-bar-chart-one' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-bar-chart-one',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3BarChartOne'
-                    )
-                )
-            ),
-            'd3-bar-chart-two' => array(
+                    ]
+                ]
+            ],
+            'd3-bar-chart-two' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-bar-chart-two',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3BarChartTwo'
-                    )
-                )
-            ),
-            'd3-line-chart' => array(
+                    ]
+                ]
+            ],
+            'd3-line-chart' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-line-chart',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3LineChart'
-                    )
-                )
-            ),
-            'd3-line-chart-data' => array(
+                    ]
+                ]
+            ],
+            'd3-line-chart-data' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-line-chart-data',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3LineChartData'
-                    )
-                )
-            ),
-            'd3-doughnut-chart' => array(
+                    ]
+                ]
+            ],
+            'd3-doughnut-chart' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-doughnut-chart',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3DoughnutChart'
-                    )
-                )
-            ),
-            'd3-partition-chart' => array(
+                    ]
+                ]
+            ],
+            'd3-partition-chart' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-partition-chart',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3PartitionChart'
-                    )
-                )
-            ),
-            'd3-sunburst-chart' => array(
+                    ]
+                ]
+            ],
+            'd3-sunburst-chart' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-sunburst-chart',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'd3SunburstChart'
-                    )
-                )
-            ),
-            'd3-get-data' => array(
+                    ]
+                ]
+            ],
+            'd3-get-data' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/d3-get-data',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'getData'
-                    )
-                )
-            ),
-            'classes' => array(
+                    ]
+                ]
+            ],
+            'classes' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/classes[/:fqn]',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'classes'
-                    )
-                )
-            ),
-            'force-directed-graph' => array(
+                    ]
+                ]
+            ],
+            'force-directed-graph' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/fdg',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'fdg'
-                    )
-                )
-            ),
-            'get-namespaces' => array(
+                    ]
+                ]
+            ],
+            'get-namespaces' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/get-namespaces',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'getNamespaces'
-                    )
-                )
-            ),
-            'get-classes' => array(
+                    ]
+                ]
+            ],
+            'get-classes' => [
                 'type' => Zend\Router\Http\Segment::class,
-                'options' => array(
+                'options' => [
                     'route'    => '/get-classes',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => Application\Controller\IndexController::class,
                         'action'     => 'getClasses'
-                    )
-                )
-            )
-        )
-    ),
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-                'analyzer-run' => array(
-                    'options' => array(
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'console' => [
+        'router' => [
+            'routes' => [
+                'analyzer-run' => [
+                    'options' => [
                         'route'    => 'run [--ignore=] <path>',
-                        'defaults' => array(
+                        'defaults' => [
                             'controller' => Application\Controller\AnalyzeController::class,
                             'action'     => 'run'
-                        )
-                    )
-                ),
-                'analyzer-report' => array(
-                    'options' => array(
+                        ]
+                    ]
+                ],
+                'analyzer-report' => [
+                    'options' => [
                         'route'    => 'report',
-                        'defaults' => array(
+                        'defaults' => [
                             'controller' => Application\Controller\AnalyzeController::class,
                             'action'     => 'report'
-                        )
-                    )
-                )
-            )
-        )
-    ),
-    'menu' => array(
-        'Menü' => array(
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'menu' => [
+        'Menü' => [
             'Home' => 'home',
             'Classes' => 'classes',
             'Dependency' => 'force-directed-graph'
-        ),
-        'D3.js Tutorial' => array(
+        ],
+        'D3.js Tutorial' => [
             'Bar Chart I (div)' => 'd3-bar-chart-one',
             'Bar Chart II (svg)' => 'd3-bar-chart-two',
             'Line Chart (svg)' => 'd3-line-chart',
             'Doughnut Chart' => 'd3-doughnut-chart',
             'Partition Chart' => 'd3-partition-chart',
             'Sunburst Chart' => 'd3-sunburst-chart'
-        )
-    )
-);
+        ]
+    ]
+];
