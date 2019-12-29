@@ -3,7 +3,8 @@
 return [
     'controllers' => [
         'invokables' => [
-            Application\Controller\IndexController::class => Application\Controller\IndexController::class
+            Application\Controller\IndexController::class => Application\Controller\IndexController::class,
+            Application\Controller\ProjectController::class => Application\Controller\ProjectController::class
         ],
         'factories' => [
             Application\Controller\AnalyzeController::class => Application\Controller\AnalyzeControllerFactory::class
@@ -192,6 +193,24 @@ return [
                         'defaults' => [
                             'controller' => Application\Controller\AnalyzeController::class,
                             'action'     => 'report'
+                        ]
+                    ]
+                ],
+                'project-list' => [
+                    'options' => [
+                        'route'    => 'project list',
+                        'defaults' => [
+                            'controller' => Application\Controller\ProjectController::class,
+                            'action'     => 'list'
+                        ]
+                    ]
+                ],
+                'project-new' => [
+                    'options' => [
+                        'route'    => 'project new [--name=] <path>',
+                        'defaults' => [
+                            'controller' => Application\Controller\ProjectController::class,
+                            'action'     => 'new'
                         ]
                     ]
                 ]
