@@ -4,15 +4,16 @@ return [
     'controllers' => [
         'invokables' => [
             Application\Controller\IndexController::class => Application\Controller\IndexController::class,
-            Application\Controller\ProjectController::class => Application\Controller\ProjectController::class
         ],
         'factories' => [
-            Application\Controller\AnalyzeController::class => Application\Controller\AnalyzeControllerFactory::class
+            Application\Controller\AnalyzeController::class => Application\Controller\AnalyzeControllerFactory::class,
+            Application\Controller\ProjectController::class => Application\Controller\ProjectControllerFactory::class
         ]
     ],
     'service_manager' => [
         'factories' => [
-            Application\Model\CodeAnalyzer\CodeAnalyzer::class => Application\Model\CodeAnalyzer\CodeAnalyzerFactory::class
+            Application\Model\CodeAnalyzer\CodeAnalyzer::class => Application\Model\CodeAnalyzer\CodeAnalyzerFactory::class,
+            Application\Model\Project\ProjectStorage::class => Application\Model\Project\ProjectStorageFactory::class
         ]
     ],
     'view_helpers' => [
@@ -196,6 +197,15 @@ return [
                         ]
                     ]
                 ],
+                'analyze-project' => [
+                    'options' => [
+                        'route'    => 'run project <name>',
+                        'defaults' => [
+                            'controller' => Application\Controller\AnalyzeController::class,
+                            'action'     => 'runProject'
+                        ]
+                    ]
+                ],
                 'project-list' => [
                     'options' => [
                         'route'    => 'project list',
@@ -205,12 +215,21 @@ return [
                         ]
                     ]
                 ],
-                'project-new' => [
+                'project-add' => [
                     'options' => [
-                        'route'    => 'project new [--name=] <path>',
+                        'route'    => 'project add <name> <path>',
                         'defaults' => [
                             'controller' => Application\Controller\ProjectController::class,
-                            'action'     => 'new'
+                            'action'     => 'add'
+                        ]
+                    ]
+                ],
+                'project-remove' => [
+                    'options' => [
+                        'route'    => 'project remove <name>',
+                        'defaults' => [
+                            'controller' => Application\Controller\ProjectController::class,
+                            'action'     => 'remove'
                         ]
                     ]
                 ]

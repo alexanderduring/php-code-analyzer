@@ -5,6 +5,7 @@ namespace Application\Controller;
 use Application\Model\CodeAnalyzer\CodeAnalyzer;
 use Application\Model\File\FilesProcessor;
 use Application\Model\File\RecursiveFileIterator;
+use Application\Model\Project\ProjectStorage;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
@@ -12,20 +13,16 @@ class AnalyzeControllerFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $serviceLocator, $requestedName, array $options = null)
     {
-        $analyzeController = new AnalyzeController();
-
-        // Inject CodeAnalyzer
         $codeAnalyzer = $serviceLocator->get(CodeAnalyzer::class);
-        $analyzeController->injectCodeAnalyzer($codeAnalyzer);
-
-        // Inject FilesProcessor
         $filesProcessor = new FilesProcessor();
-        $analyzeController->injectFilesProcessor($filesProcessor);
+        $recursiveFileIterator = new RecursiveFileIterator();
+        $projectStorage = $serviceLocator->get(ProjectStorage::class);
 
-        // Inject RecursiveFileIterator
-        $fileIterator = new RecursiveFileIterator();
-        $analyzeController->injectRecursiveFileIterator($fileIterator);
-
-        return $analyzeController;
+        return new AnalyzeController(
+            $codeAnalyzer,
+            $filesProcessor,
+            $projectStorage,
+            $recursiveFileIterator
+        );
     }
 }

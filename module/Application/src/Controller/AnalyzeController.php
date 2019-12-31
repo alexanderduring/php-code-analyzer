@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Application\Controller;
 
 use Application\Model\ClassName\ClassName;
@@ -8,58 +10,85 @@ use Application\Model\CodeAnalyzer\Index;
 use Application\Model\CodeAnalyzer\Index\NamespaceTree;
 use Application\Model\File\FilesProcessor;
 use Application\Model\File\RecursiveFileIterator;
+use Application\Model\Project\ProjectStorage;
 use EmberDb\DocumentManager;
+use Exception;
 use Zend\Mvc\Controller\AbstractActionController;
 
 class AnalyzeController extends AbstractActionController
 {
-    /** @var \Application\Model\CodeAnalyzer\CodeAnalyzer */
+    /** @var CodeAnalyzer */
     private $analyzer;
 
     /** @var FilesProcessor */
     private $filesProcessor;
+
+    /** @var ProjectStorage */
+    private $projectStorage;
 
     /** @var RecursiveFileIterator */
     private $recursiveFileIterator;
 
 
 
-    public function injectCodeAnalyzer(CodeAnalyzer $codeAnalyzer)
-    {
+    public function __construct(
+        CodeAnalyzer $codeAnalyzer,
+        FilesProcessor $filesProcessor,
+        ProjectStorage $projectStorage,
+        RecursiveFileIterator $recursiveFileIterator
+    ) {
         $this->analyzer = $codeAnalyzer;
-    }
-
-
-
-    public function injectFilesProcessor(FilesProcessor $filesProcessor)
-    {
         $this->filesProcessor = $filesProcessor;
-    }
-
-
-
-    public function injectRecursiveFileIterator(RecursiveFileIterator $recursiveFileIterator)
-    {
+        $this->projectStorage = $projectStorage;
         $this->recursiveFileIterator = $recursiveFileIterator;
     }
 
 
 
+    /**
+     * @route 'run [--ignore=] <path>'
+     */
     public function runAction()
     {
         $basePath = (string) $this->getRequest()->getParam('path');
         $ignores = $this->splitCommaSeparatedValue($this->getRequest()->getParam('ignore'));
 
         if (file_exists($basePath)) {
-            $files = $this->recursiveFileIterator->open('/\.php$/', $basePath, $ignores);
-
-            $this->filesProcessor->processFiles($files, $this->analyzer);
-            $this->storeResults();
-
-            $usedMemory = round(memory_get_usage() / (1024*1024), 2);
+            $usedMemory = $this->analyze($basePath, $ignores);
             echo "Analyzing finished. Used memory: " . $usedMemory . " MBytes.\n\n";
         } else {
             echo "The file/folder " . $basePath . " does not exist.\n\n";
+        }
+
+        return;
+    }
+
+
+
+    /**
+     * @route 'run project <name>'
+     */
+    public function runProjectAction()
+    {
+        $projectName = (string) $this->getRequest()->getParam('name');
+
+        try {
+            if (!$this->projectStorage->hasProject($projectName)) {
+                throw new Exception('Project does not exist.');
+            }
+
+            $project = $this->projectStorage->getProject($projectName);
+
+
+            if (file_exists($project->getPath())) {
+                $usedMemory = $this->analyze($project->getPath(), $project->getIgnores());
+                echo "Analyzing finished. Used memory: " . $usedMemory . " MBytes.\n\n";
+            } else {
+                echo "The file/folder " . $project->getPath() . " does not exist.\n\n";
+            }
+
+        } catch (Exception $exception) {
+            echo $exception->getMessage() . "/n";
         }
 
         return;
@@ -76,6 +105,20 @@ class AnalyzeController extends AbstractActionController
         }
 
         return;
+    }
+
+
+
+    private function analyze(string $path, array $ignores): float
+    {
+        $files = $this->recursiveFileIterator->open('/\.php$/', $path, $ignores);
+
+        $this->filesProcessor->processFiles($files, $this->analyzer);
+        $this->storeResults();
+
+        $usedMemory = round(memory_get_usage() / (1024*1024), 2);
+
+        return $usedMemory;
     }
 
 
